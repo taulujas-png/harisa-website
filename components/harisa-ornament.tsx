@@ -27,11 +27,12 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
       xmlns="http://www.w3.org/2000/svg"
     >
       <g transform="matrix(-0.84353932,0,0,0.84353932,-175.39664,60.520565)">
+        {/* First mirrored half */}
         <g transform="rotate(48.206937,-174.04489,131.76927)">
           <g transform="matrix(-0.70710094,0.70711262,0.70711262,0.70710094,-703.81581,251.86598)">
             {ornamentPaths.map((d, i) => (
               <motion.path
-                key={i}
+                key={`path1-${i}`}
                 d={d}
                 stroke={color}
                 strokeWidth="10"
@@ -54,6 +55,33 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
               />
             ))}
           </g>
+        </g>
+        {/* Second mirrored half */}
+        <g transform="rotate(45.000473,-296.2444,144.71822)">
+          {ornamentPaths.map((d, i) => (
+            <motion.path
+              key={`path2-${i}`}
+              d={d}
+              stroke={color}
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{
+                pathLength: {
+                  duration: 1.2,
+                  delay: delay + i * 0.12,
+                  ease: "easeInOut"
+                },
+                opacity: {
+                  duration: 0.2,
+                  delay: delay + i * 0.12
+                }
+              }}
+            />
+          ))}
         </g>
       </g>
     </svg>
