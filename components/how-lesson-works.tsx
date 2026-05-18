@@ -35,46 +35,76 @@ export function HowLessonWorks() {
           </h2>
         </Reveal>
 
-        {/* Stepper */}
-        <Reveal delay={0.1}>
-          <div className="relative">
-            {/* Numbered circles row with connecting lines */}
-            <div className="flex items-center justify-between mb-6 px-4 md:px-8">
-              {steps.map((_, i) => (
-                <div key={i} className="flex items-center flex-1 last:flex-none">
-                  {/* Circle with number */}
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-blue-primary text-blue-primary flex items-center justify-center text-lg md:text-xl font-semibold bg-white shrink-0">
+        {/* Stepper & Cards - Desktop */}
+        <div className="hidden md:block">
+          <Reveal delay={0.1}>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-6 px-4 md:px-8">
+                {steps.map((_, i) => (
+                  <div key={i} className="flex items-center flex-1 last:flex-none">
+                    <div className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-blue-primary text-blue-primary flex items-center justify-center text-lg md:text-xl font-semibold bg-white shrink-0">
+                      {i + 1}
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div className="flex-1 h-0 border-t-2 border-dashed border-blue-primary/40 mx-2 md:mx-4" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-4 gap-4">
+                {steps.map((step, i) => (
+                  <div 
+                    key={i} 
+                    className="bg-white rounded-2xl p-5 shadow-sm border border-black/[0.04]"
+                  >
+                    <h3 className="text-lg font-semibold text-text-primary mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-blue-primary font-medium text-sm mb-2">
+                      {step.duration}
+                    </p>
+                    <p className="text-text-muted text-sm leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Stepper & Cards - Mobile */}
+        <div className="md:hidden">
+          <Reveal delay={0.1}>
+            <div className="flex flex-col gap-6">
+              {steps.map((step, i) => (
+                <div key={i} className="flex items-start gap-4 relative">
+                  {/* Vertical Line */}
+                  {i < steps.length - 1 && (
+                    <div className="absolute left-[23px] top-12 bottom-0 w-px border-l-2 border-dashed border-blue-primary/40" />
+                  )}
+                  {/* Circle */}
+                  <div className="w-12 h-12 rounded-full border-2 border-blue-primary text-blue-primary flex items-center justify-center text-lg font-semibold bg-white shrink-0 z-10">
                     {i + 1}
                   </div>
-                  {/* Connecting dashed line */}
-                  {i < steps.length - 1 && (
-                    <div className="flex-1 h-0 border-t-2 border-dashed border-blue-primary/40 mx-2 md:mx-4" />
-                  )}
+                  {/* Card */}
+                  <div className="bg-white rounded-2xl p-4 shadow-sm border border-black/[0.04] flex-1">
+                    <h3 className="text-base font-semibold text-text-primary mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-blue-primary font-medium text-sm mb-2">
+                      {step.duration}
+                    </p>
+                    <p className="text-text-muted text-sm leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
-
-            {/* Cards row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              {steps.map((step, i) => (
-                <div 
-                  key={i} 
-                  className="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-black/[0.04]"
-                >
-                  <h3 className="text-base md:text-lg font-semibold text-text-primary mb-1">
-                    {step.title}
-                  </h3>
-                  <p className="text-blue-primary font-medium text-sm mb-2">
-                    {step.duration}
-                  </p>
-                  <p className="text-text-muted text-sm leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
       </div>
     </section>
   )
