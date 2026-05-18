@@ -76,11 +76,11 @@ export function OrnamentCorner({
 
   return (
     <div className={`absolute ${positionClasses[position]} pointer-events-none`}>
-      <HarisaOrnament 
-        className="w-64 h-64 md:w-[500px] md:h-[500px] lg:w-[700px] lg:h-[700px] opacity-70"
-        delay={delay}
-        color="#2563EB"
-      />
+        <HarisaOrnament 
+          className="w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] lg:w-[30vw] lg:h-[30vw] opacity-50"
+          delay={delay}
+          color="#2563EB"
+        />
     </div>
   )
 }
