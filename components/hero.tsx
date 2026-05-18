@@ -8,9 +8,9 @@ export function Hero() {
     <section className="relative bg-gradient-to-b from-blue-light/40 via-off-white to-off-white py-20 md:py-32 px-4 md:px-6 overflow-hidden min-h-[90vh] md:min-h-[85vh] flex items-center">
       {/* Corner ornaments */}
       <OrnamentCorner position="top-left" delay={0.2} />
-      <OrnamentCorner position="top-right" delay={0.4} />
-      <OrnamentCorner position="bottom-left" delay={0.6} />
-      <OrnamentCorner position="bottom-right" delay={0.8} />
+      <OrnamentCorner position="top-right" delay={0.2} />
+      <OrnamentCorner position="bottom-left" delay={0.2} />
+      <OrnamentCorner position="bottom-right" delay={0.2} />
       
       <div className="max-w-3xl mx-auto text-center relative z-10">
         <StaggerContainer className="flex flex-col items-center">
