@@ -17,15 +17,14 @@ export function Hero() {
           {/* Main headline */}
           <StaggerItem>
             <h1 className="text-4xl md:text-6xl lg:text-[4rem] font-semibold text-text-primary leading-[1.1] tracking-[-0.03em] text-balance mb-6">
-              Арабский как его передавали веками — живым, а не в учебнике
+              Арабский как его впитывали веками
             </h1>
           </StaggerItem>
 
           {/* Subheadline */}
           <StaggerItem>
             <p className="text-base md:text-lg text-text-muted font-normal mb-10 max-w-xl">
-              Игры вместо правил. Практика вместо зубрёжки.<br />
-              С первого урока.
+              Живым, а не в учебнике.
             </p>
           </StaggerItem>
 
