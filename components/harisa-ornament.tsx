@@ -38,19 +38,20 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
               strokeLinecap="round"
               strokeLinejoin="round"
               fill="none"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: [0, 1], opacity: [0, 1] }}
-              transition={{
-                pathLength: {
-                  duration: 5,
-                  delay: delay,
-                  ease: "easeInOut"
-                },
-                opacity: {
-                  duration: 0.1,
-                  delay: delay
-                }
-              }}
+               initial={{ pathLength: 0, opacity: 0 }}
+               whileInView={{ pathLength: [0, 1], opacity: [0, 1] }}
+               viewport={{ once: true }}
+               transition={{
+                 pathLength: {
+                   duration: 5,
+                   delay: delay,
+                   ease: "easeInOut"
+                 },
+                 opacity: {
+                   duration: 0.1,
+                   delay: delay
+                 }
+               }}
             />
           </g>
         </g>
@@ -62,10 +63,12 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
 // Corner wrapper with proper rotation for each corner
 export function OrnamentCorner({ 
   position, 
-  delay = 0 
+  delay = 0,
+  className = "w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] lg:w-[30vw] lg:h-[30vw] opacity-50"
 }: { 
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
   delay?: number 
+  className?: string
 }) {
   const positionClasses = {
     'top-left': 'top-0 left-0',
@@ -77,7 +80,7 @@ export function OrnamentCorner({
   return (
     <div className={`absolute ${positionClasses[position]} pointer-events-none`}>
         <HarisaOrnament 
-          className="w-[60vw] h-[60vw] md:w-[40vw] md:h-[40vw] lg:w-[30vw] lg:h-[30vw] opacity-50"
+          className={className}
           delay={delay}
           color="#2563EB"
         />
