@@ -1,0 +1,120 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Harisa Brand Colors - Black, White, Blue only */
+  --blue-primary: #2563EB;
+  --blue-light: #EEF3FF;
+  --blue-dark: #1E40AF;
+  --white: #FFFFFF;
+  --off-white: #F8F7F4;
+  --surface: #F2F0EB;
+  --text-primary: #1A1A1A;
+  --text-muted: #6B7280;
+  --border-light: rgba(0,0,0,0.06);
+  
+  /* Semantic tokens */
+  --background: #F8F7F4;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EEF3FF;
+  --secondary-foreground: #2563EB;
+  --muted: #F2F0EB;
+  --muted-foreground: #6B7280;
+  --accent: #2563EB;
+  --accent-foreground: #FFFFFF;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: rgba(0,0,0,0.06);
+  --input: rgba(0,0,0,0.06);
+  --ring: #2563EB;
+  --radius: 1rem;
+}
+
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
+  
+  /* Custom brand colors for Tailwind */
+  --color-blue-primary: #2563EB;
+  --color-blue-light: #EEF3FF;
+  --color-blue-dark: #1E40AF;
+  --color-off-white: #F8F7F4;
+  --color-surface: #F2F0EB;
+  --color-text-primary: #1A1A1A;
+  --color-text-muted: #6B7280;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Scroll reveal animation base */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Standard card */
+.standard-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Blue accent card */
+.blue-accent-card {
+  background: #2563EB;
+  color: white;
+}
