@@ -21,35 +21,41 @@ const ornamentPaths = [
 export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }: HarisaOrnamentProps) {
   return (
     <svg
-      viewBox="-370 100 180 100"
+      viewBox="0 0 210 210"
       fill="none"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {ornamentPaths.map((d, i) => (
-        <motion.path
-          key={i}
-          d={d}
-          stroke={color}
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{
-            pathLength: {
-              duration: 1.2,
-              delay: delay + i * 0.12,
-              ease: "easeInOut"
-            },
-            opacity: {
-              duration: 0.2,
-              delay: delay + i * 0.12
-            }
-          }}
-        />
-      ))}
+      <g transform="matrix(-0.84353932,0,0,0.84353932,-175.39664,60.520565)">
+        <g transform="rotate(48.206937,-174.04489,131.76927)">
+          <g transform="matrix(-0.70710094,0.70711262,0.70711262,0.70710094,-703.81581,251.86598)">
+            {ornamentPaths.map((d, i) => (
+              <motion.path
+                key={i}
+                d={d}
+                stroke={color}
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  pathLength: {
+                    duration: 1.2,
+                    delay: delay + i * 0.12,
+                    ease: "easeInOut"
+                  },
+                  opacity: {
+                    duration: 0.2,
+                    delay: delay + i * 0.12
+                  }
+                }}
+              />
+            ))}
+          </g>
+        </g>
+      </g>
     </svg>
   )
 }
@@ -72,7 +78,7 @@ export function OrnamentCorner({
   return (
     <div className={`absolute ${positionClasses[position]} pointer-events-none`}>
       <HarisaOrnament 
-        className="w-24 h-16 md:w-40 md:h-28 lg:w-56 lg:h-40 opacity-70"
+        className="w-64 h-64 md:w-[500px] md:h-[500px] lg:w-[700px] lg:h-[700px] opacity-70"
         delay={delay}
         color="#2563EB"
       />
