@@ -44,7 +44,7 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
                 pathLength: {
                   duration: 5,
                   delay: delay,
-                  ease: "easeInOut"
+                  ease: "easeOut"
                 },
                 opacity: {
                   duration: 0.1,
