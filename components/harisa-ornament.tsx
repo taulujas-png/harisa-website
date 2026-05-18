@@ -39,15 +39,15 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
               strokeLinejoin="round"
               fill="none"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: [0, 1], opacity: [0, 1] }}
+              animate={{ pathLength: 1, opacity: 1 }}
               transition={{
                 pathLength: {
-                  duration: 8,
+                  duration: 6,
                   delay: delay,
-                  ease: "circOut"
+                  ease: [0.22, 1, 0.36, 1]
                 },
                 opacity: {
-                  duration: 0.1,
+                  duration: 0.5,
                   delay: delay
                 }
               }}
