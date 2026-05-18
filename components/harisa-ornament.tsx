@@ -42,9 +42,9 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
               animate={{ pathLength: [0, 1], opacity: [0, 1] }}
               transition={{
                 pathLength: {
-                  duration: 5,
+                  duration: 8,
                   delay: delay,
-                  ease: "easeOut"
+                  ease: "circOut"
                 },
                 opacity: {
                   duration: 0.1,
