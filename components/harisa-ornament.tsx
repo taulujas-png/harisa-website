@@ -25,6 +25,7 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
       fill="none"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
+      style={{ overflow: 'visible' }}
     >
       <g transform="matrix(-0.84353932,0,0,0.84353932,-175.39664,60.520565)">
         <g transform="matrix(0.6707326,0.7503564,-0.7503564,0.6707326,42.513597,174.5527)">
@@ -52,67 +53,6 @@ export function HarisaOrnament({ className = "", delay = 0, color = "#2563EB" }:
               }}
             />
           </g>
-        </g>
-      </g>
-    </svg>
-  )
-}
-                }}
-              />
-            ))}
-          </g>
-        </g>
-        <g transform="matrix(-0.70710094,0.70711262,0.70711262,0.70710094,-197.96898,108.32823)">
-          {ornamentPaths.map((d, i) => (
-            <motion.path
-              key={`path2-${i}`}
-              d={d}
-              stroke={color}
-              strokeWidth="10"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                pathLength: {
-                  duration: 1.2,
-                  delay: delay + i * 0.12,
-                  ease: "easeInOut"
-                },
-                opacity: {
-                  duration: 0.2,
-                  delay: delay + i * 0.12
-                }
-              }}
-            />
-          ))}
-        </g>
-        <g transform="rotate(45.000473,129.94238,683.55335)">
-          {ornamentPaths.map((d, i) => (
-            <motion.path
-              key={`path3-${i}`}
-              d={d}
-              stroke={color}
-              strokeWidth="10"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{
-                pathLength: {
-                  duration: 1.2,
-                  delay: delay + i * 0.12,
-                  ease: "easeInOut"
-                },
-                opacity: {
-                  duration: 0.2,
-                  delay: delay + i * 0.12
-                }
-              }}
-            />
-          ))}
         </g>
       </g>
     </svg>
