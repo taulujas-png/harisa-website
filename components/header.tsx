@@ -2,9 +2,9 @@
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <span className="text-blue-primary font-semibold text-2xl tracking-tight">
+    <header className="sticky top-0 z-50 w-full px-4 py-4">
+      <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-md border border-gray-100 rounded-full px-6 py-3 flex items-center justify-between shadow-sm">
+        <span className="text-blue-primary font-semibold text-4xl tracking-tight">
           harisa
         </span>
         <a

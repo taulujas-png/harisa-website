@@ -31,12 +31,12 @@ export function Hero() {
           {/* CTA row */}
           <StaggerItem>
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <a
-                href="#pricing"
-                className="w-full sm:w-auto bg-blue-primary text-white text-base font-medium px-8 py-3.5 rounded-full hover:bg-blue-dark transition-colors shadow-lg shadow-blue-primary/25"
-              >
-                Занять место
-              </a>
+               <a
+                 href="#pricing"
+                 className="w-full sm:w-auto bg-black text-white text-base font-medium px-8 py-3.5 rounded-full hover:bg-gray-900 transition-colors shadow-lg shadow-black/25"
+               >
+                 Занять место
+               </a>
               <a
                 href="#contact"
                 className="text-text-muted text-base hover:text-text-primary transition-colors"
