@@ -10,6 +10,7 @@ import { Pricing } from '@/components/pricing'
 import { FAQ } from '@/components/faq'
 import { FinalCTA } from '@/components/final-cta'
 import { Footer } from '@/components/footer'
+import { AvailableSlots } from '@/components/available-slots'
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <HowLessonWorks />
       <ThreeGames />
       <LessonFormat />
+      <AvailableSlots />
       <Pricing />
       <FAQ />
       <FinalCTA />
