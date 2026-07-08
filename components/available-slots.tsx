@@ -17,6 +17,7 @@ interface Slot {
   current_students: number;
   is_open: boolean;
   name: string; // Used as course name fallback
+  courses?: { title: string } | null;
 }
 
 export function AvailableSlots() {
@@ -29,7 +30,7 @@ export function AvailableSlots() {
       try {
         const { data, error } = await supabase
           .from('slots')
-          .select('id, name, schedule_type, description, time_start, price, gender, max_students, current_students, is_open')
+          .select('id, name, schedule_type, description, time_start, price, gender, max_students, current_students, is_open, courses(title)')
           .order('schedule_type', { ascending: true });
 
         if (error) {
@@ -69,7 +70,8 @@ export function AvailableSlots() {
   
   // Group slots by course name
   const groupedSlots = filteredSlots.reduce((acc, slot) => {
-    const courseName = slot.name || 'Общий курс';
+    // If the slot is linked to a course, use course title. Otherwise fallback to 'Общий курс'
+    const courseName = slot.courses?.title || 'Общий курс';
     if (!acc[courseName]) acc[courseName] = [];
     acc[courseName].push(slot);
     return acc;
@@ -118,7 +120,9 @@ export function AvailableSlots() {
                         <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">{courseName}</h3>
                         
                         <div className="flex items-baseline gap-2 mt-4 mb-6">
-                          <span className="text-5xl font-semibold text-white leading-none">3 000</span>
+                          <span className="text-5xl font-semibold text-white leading-none">
+                            {courseSlots[0].price ? courseSlots[0].price.toLocaleString() : '3 000'}
+                          </span>
                           <span className="text-white/80 text-lg">сом / мес</span>
                         </div>
 
@@ -142,10 +146,10 @@ export function AvailableSlots() {
                       {showToggle && (
                         <div className="shrink-0 flex flex-col items-start md:items-end w-full md:w-auto mt-6 md:mt-0">
                           <p className="text-white/70 text-sm mb-3">Выберите группу:</p>
-                          <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-2xl flex items-center border border-white/10 w-full md:w-auto">
+                          <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-full flex items-center border border-white/10 w-full md:w-auto">
                             <button
                               onClick={() => setActiveGender('male')}
-                              className={`flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                              className={`flex-1 md:flex-none px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${
                                 activeGender === 'male' ? 'bg-white text-blue-primary shadow-md' : 'text-white/70 hover:text-white'
                               }`}
                             >
@@ -153,7 +157,7 @@ export function AvailableSlots() {
                             </button>
                             <button
                               onClick={() => setActiveGender('female')}
-                              className={`flex-1 md:flex-none px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                              className={`flex-1 md:flex-none px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${
                                 activeGender === 'female' ? 'bg-white text-blue-primary shadow-md' : 'text-white/70 hover:text-white'
                               }`}
                             >
