@@ -4,22 +4,22 @@ import { Reveal } from './reveal'
 
 const steps = [
   {
-    title: "Warm-up",
+    title: "Разминка",
     duration: "7 МИН",
     description: "Блиц по прошлому занятию"
   },
   {
-    title: "Theory Drop",
+    title: "Теория",
     duration: "13 МИН",
     description: "4–5 слов через образы на доске"
   },
   {
-    title: "Grand Game",
+    title: "Большая игра",
     duration: "20 МИН",
     description: "Живая игра со всей группой"
   },
   {
-    title: "Wrap-up",
+    title: "Подведение итогов",
     duration: "5 МИН",
     description: "Динары + домашнее задание"
   }
