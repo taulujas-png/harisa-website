@@ -17,7 +17,7 @@ interface Slot {
   current_students: number;
   is_open: boolean;
   name: string; // Used as course name fallback
-  courses?: { title: string } | null;
+  courses?: { title: string; price_per_month?: number } | null;
 }
 
 export function AvailableSlots() {
@@ -30,7 +30,7 @@ export function AvailableSlots() {
       try {
         const { data, error } = await supabase
           .from('slots')
-          .select('id, name, schedule_type, description, time_start, price, gender, max_students, current_students, is_open, courses(title)')
+          .select('id, name, schedule_type, description, time_start, price, gender, max_students, current_students, is_open, courses(title, price_per_month)')
           .order('schedule_type', { ascending: true });
 
         if (error) {
@@ -121,7 +121,7 @@ export function AvailableSlots() {
                         
                         <div className="flex items-baseline gap-2 mt-4 mb-6">
                           <span className="text-5xl font-semibold text-white leading-none">
-                            {courseSlots[0].price ? courseSlots[0].price.toLocaleString() : '3 000'}
+                            {courseSlots[0].courses?.price_per_month ? courseSlots[0].courses.price_per_month.toLocaleString() : '3 000'}
                           </span>
                           <span className="text-white/80 text-lg">сом / мес</span>
                         </div>
