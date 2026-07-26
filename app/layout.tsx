@@ -18,6 +18,9 @@ export const viewport = {
   themeColor: '#F8F7F4',
 }
 
+import { Suspense } from 'react';
+import { PromoTracker } from '@/components/promo-tracker';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,6 +29,9 @@ export default function RootLayout({
   return (
     <html lang="ru" className="bg-off-white">
       <body className={`${inter.variable} font-sans antialiased`}>
+        <Suspense fallback={null}>
+          <PromoTracker />
+        </Suspense>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

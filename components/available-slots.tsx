@@ -223,7 +223,7 @@ export function AvailableSlots() {
                               </button>
                             ) : (
                               <a 
-                                href={`https://harisa.site/login?slot=${slot.id}`}
+                                href={`https://harisa.site/login?slot=${slot.id}${typeof window !== 'undefined' && localStorage.getItem('harisa_promo') ? `&promo=${localStorage.getItem('harisa_promo')}` : ''}`}
                                 className="w-full py-4 px-6 bg-blue-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-blue-primary/30 group/btn"
                               >
                                 Записаться на это время
