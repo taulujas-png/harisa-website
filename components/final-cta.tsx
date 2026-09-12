@@ -31,15 +31,15 @@ export function FinalCTA() {
           </StaggerItem>
 
            <StaggerItem>
-             <a
-               href="https://t.me/harisa"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-black text-blue-primary font-medium px-8 py-3.5 rounded-full text-base hover:bg-gray-900 transition-colors shadow-lg shadow-black/20"
-            >
-              Занять место
-            </a>
-          </StaggerItem>
+              <a
+                href="https://t.me/harisa"
+               target="_blank"
+               rel="noopener noreferrer"
+               className="inline-block bg-black text-blue-primary font-medium px-8 py-3.5 rounded-full text-base hover:bg-gray-900 active:scale-95 transition-transform duration-150 shadow-lg shadow-black/20 touch-manipulation select-none"
+             >
+               Занять место
+             </a>
+           </StaggerItem>
         </StaggerContainer>
       </div>
     </section>

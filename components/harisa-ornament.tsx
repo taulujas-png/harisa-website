@@ -25,7 +25,8 @@ export function HarisaOrnament({
     ? {
         initial: { pathLength: 0, opacity: 0 },
         whileInView: { pathLength: 1, opacity: 1 },
-        viewport: { once: true },
+        // Не анимируем пока секция далеко за вьюпортом — режем стартовую нагрузку
+        viewport: { once: true, margin: "-100px" },
       }
     : {
         initial: { pathLength: 0, opacity: 0 },
@@ -37,7 +38,8 @@ export function HarisaOrnament({
       fill="none"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
-      style={{ overflow: 'visible' }}
+      style={{ overflow: 'visible', contain: 'layout paint' }}
+      aria-hidden
     >
       <g transform="matrix(-0.84353932,0,0,0.84353932,-175.39664,60.520565)">
         <g transform="matrix(0.6707326,0.7503564,-0.7503564,0.6707326,42.513597,174.5527)">
@@ -81,7 +83,10 @@ export function OrnamentCorner({
   }
 
   return (
-    <div className={`absolute ${positionClasses[position]} pointer-events-none`}>
+    <div
+      className={`absolute ${positionClasses[position]} pointer-events-none select-none motion-reduce:hidden`}
+      style={{ contain: 'strict' }}
+    >
       <HarisaOrnament 
         className={className}
         delay={delay}

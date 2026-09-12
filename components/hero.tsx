@@ -26,21 +26,21 @@ export function Hero() {
           </StaggerItem>
 
            <StaggerItem>
-             <div className="flex flex-col sm:flex-row items-center gap-4">
-               <a
-                 href="#pricing"
-                className="w-full sm:w-auto bg-black text-white text-base font-medium px-8 py-3.5 rounded-full hover:bg-gray-900 transition-colors shadow-lg shadow-black/25"
-              >
-                Занять место
-               </a>
-               <a
-                 href="#contact"
-                className="text-text-muted text-base hover:text-text-primary transition-colors"
-              >
-                Написать нам →
-              </a>
-            </div>
-          </StaggerItem>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <a
+                  href="#schedule"
+                 className="w-full sm:w-auto bg-black text-white text-base font-medium px-8 py-3.5 rounded-full hover:bg-gray-900 active:scale-95 transition-transform duration-150 shadow-lg shadow-black/25 touch-manipulation select-none"
+               >
+                 Занять место
+                </a>
+                <a
+                  href="#contact"
+                 className="text-text-muted text-base hover:text-text-primary active:scale-95 transition-transform duration-150 px-4 py-2 touch-manipulation"
+               >
+                 Написать нам →
+                </a>
+              </div>
+           </StaggerItem>
         </StaggerContainer>
       </div>
     </section>

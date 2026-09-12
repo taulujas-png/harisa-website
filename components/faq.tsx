@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Reveal, StaggerContainer, StaggerItem } from './reveal'
 
 const faqs = [
@@ -33,19 +32,18 @@ const faqs = [
 
 function ChevronIcon({ className = "", isOpen = false }: { className?: string; isOpen?: boolean }) {
   return (
-    <motion.svg 
-      className={className} 
+    <svg 
+      className={`${className} transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
       viewBox="0 0 24 24" 
       fill="none" 
       stroke="currentColor" 
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round"
-      animate={{ rotate: isOpen ? 180 : 0 }}
-      transition={{ duration: 0.2 }}
+      aria-hidden
     >
       <polyline points="6 9 12 15 18 9" />
-    </motion.svg>
+    </svg>
   )
 }
 
@@ -69,28 +67,26 @@ export function FAQ() {
               <div className="border-b border-black/[0.06]">
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full py-4 flex items-center justify-between text-left"
+                  aria-expanded={openIndex === i}
+                  className="w-full py-4 flex items-center justify-between text-left active:scale-[0.99] transition-transform duration-150 touch-manipulation select-none"
                 >
                   <span className="text-base font-medium text-text-primary pr-4">
                     {faq.question}
                   </span>
                   <ChevronIcon className="w-5 h-5 text-text-muted shrink-0" isOpen={openIndex === i} />
                 </button>
-                <AnimatePresence>
-                  {openIndex === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="pb-4 text-text-muted text-sm leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {/* GPU-only accordion: grid-rows 0fr->1fr instead of height:auto (theo #6) */}
+                <div
+                  className={`grid transition-all duration-200 ease-out ${
+                    openIndex === i ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="pb-4 text-text-muted text-sm leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
               </div>
             </Reveal>
           ))}

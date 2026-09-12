@@ -53,14 +53,22 @@ export function ThreeGames() {
         <Reveal delay={0.1}>
           <div className="relative">
             {/* Card container with content */}
-            <div className="overflow-hidden">
-              <AnimatePresence mode="wait">
+            <div className="overflow-hidden touch-pan-y">
+              <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={currentIndex}
-                  initial={{ opacity: 0, x: 30 }}
+                  initial={{ opacity: 0, x: 24 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -30 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
+                  exit={{ opacity: 0, x: -24 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.6}
+                  onDragEnd={(_, info) => {
+                    if (info.offset.x < -60) goToNext();
+                    else if (info.offset.x > 60) goToPrevious();
+                  }}
+                  style={{ touchAction: 'pan-y' }}
                 >
                   {/* Title and description block */}
                   <div className="bg-white rounded-2xl p-5 md:p-6 mb-4 border border-black/[0.06]">
@@ -100,7 +108,7 @@ export function ThreeGames() {
             <div className="flex items-center justify-center gap-4 mt-6">
               <button
                 onClick={goToPrevious}
-                className="w-10 h-10 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:border-blue-primary/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light active:scale-90 transition-transform duration-150 touch-manipulation select-none"
                 aria-label="Previous game"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -112,10 +120,10 @@ export function ThreeGames() {
                   <button
                     key={i}
                     onClick={() => setCurrentIndex(i)}
-                    className={`h-2 rounded-full transition-all ${
+                    className={`h-2 rounded-full transition-transform duration-200 touch-manipulation ${
                       i === currentIndex 
-                        ? 'bg-blue-primary w-6' 
-                        : 'bg-black/20 hover:bg-black/30 w-2'
+                        ? 'bg-blue-primary w-6 scale-100' 
+                        : 'bg-black/20 hover:bg-black/30 w-2 active:scale-125'
                     }`}
                     aria-label={`Go to game ${i + 1}`}
                   />
@@ -124,7 +132,7 @@ export function ThreeGames() {
               
               <button
                 onClick={goToNext}
-                className="w-10 h-10 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:border-blue-primary/20 transition-colors"
+                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light active:scale-90 transition-transform duration-150 touch-manipulation select-none"
                 aria-label="Next game"
               >
                 <ChevronRight className="w-5 h-5" />
