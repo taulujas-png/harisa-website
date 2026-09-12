@@ -68,12 +68,14 @@ export function FAQ() {
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
                   aria-expanded={openIndex === i}
-                  className="w-full py-4 flex items-center justify-between text-left active:scale-[0.99] transition-transform duration-150 touch-manipulation select-none"
+                  className="w-full py-4 flex items-center justify-between text-left group active:scale-[0.99] transition-transform duration-150 touch-manipulation select-none"
                 >
-                  <span className="text-base font-medium text-text-primary pr-4">
+                  <span className="text-base font-medium text-text-primary pr-4 group-hover:text-blue-primary transition-colors duration-200">
                     {faq.question}
                   </span>
-                  <ChevronIcon className="w-5 h-5 text-text-muted shrink-0" isOpen={openIndex === i} />
+                  <span className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all duration-200 group-hover:border-blue-primary/40 ${openIndex === i ? 'bg-blue-primary border-blue-primary text-white' : 'bg-white border-black/10 text-text-muted'}`}>
+                    <ChevronIcon className="w-4 h-4" isOpen={openIndex === i} />
+                  </span>
                 </button>
                 {/* GPU-only accordion: grid-rows 0fr->1fr instead of height:auto (theo #6) */}
                 <div

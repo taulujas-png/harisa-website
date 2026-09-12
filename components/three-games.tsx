@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Reveal } from './reveal'
 
@@ -28,17 +27,58 @@ const games = [
 
 export function ThreeGames() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const railRef = useRef<HTMLDivElement>(null)
+  const lockRef = useRef(false)
 
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? games.length - 1 : prev - 1))
-  }
+  const scrollToIndex = useCallback((i: number) => {
+    const rail = railRef.current
+    if (!rail) return
+    const clamped = (i + games.length) % games.length
+    const card = rail.children[clamped] as HTMLElement | undefined
+    if (!card) return
+    lockRef.current = true
+    rail.scrollTo({ left: card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2, behavior: 'smooth' })
+    setCurrentIndex(clamped)
+    window.setTimeout(() => { lockRef.current = false }, 450)
+  }, [])
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev === games.length - 1 ? 0 : prev + 1))
-  }
+  const goToPrevious = useCallback(() => {
+    scrollToIndex(currentIndex === 0 ? games.length - 1 : currentIndex - 1)
+  }, [currentIndex, scrollToIndex])
+
+  const goToNext = useCallback(() => {
+    scrollToIndex(currentIndex === games.length - 1 ? 0 : currentIndex + 1)
+  }, [currentIndex, scrollToIndex])
+
+  // Dots follow the swipe: nearest card to rail center wins
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return
+    let raf = 0
+    const onScroll = () => {
+      if (lockRef.current) return
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const center = rail.scrollLeft + rail.clientWidth / 2
+        let best = 0
+        let bestDist = Infinity
+        Array.from(rail.children).forEach((child, i) => {
+          const el = child as HTMLElement
+          const dist = Math.abs(el.offsetLeft + el.clientWidth / 2 - center)
+          if (dist < bestDist) { bestDist = dist; best = i }
+        })
+        setCurrentIndex((prev) => (prev === best ? prev : best))
+      })
+    }
+    rail.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      rail.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
 
   return (
-    <section className="bg-white py-16 md:py-24 px-4 md:px-6">
+    <section className="bg-white py-16 md:py-24 px-4 md:px-6 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         <Reveal>
           <h2 className="text-2xl md:text-3xl font-semibold text-text-primary text-center mb-3">
@@ -49,46 +89,38 @@ export function ThreeGames() {
           </p>
         </Reveal>
 
-        {/* Carousel */}
+        {/* Carousel: native swipe rail with snap (dots follow the scroll) */}
         <Reveal delay={0.1}>
           <div className="relative">
-            {/* Card container with content */}
-            <div className="overflow-hidden touch-pan-y">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0, x: 24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -24 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.6}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.x < -60) goToNext();
-                    else if (info.offset.x > 60) goToPrevious();
-                  }}
-                  style={{ touchAction: 'pan-y' }}
+            <div
+              ref={railRef}
+              className="no-scrollbar flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {games.map((game) => (
+                <article
+                  key={game.number}
+                  className="snap-center shrink-0 w-[84%] sm:w-[70%] md:w-full"
                 >
                   {/* Title and description block */}
-                  <div className="bg-white rounded-2xl p-5 md:p-6 mb-4 border border-black/[0.06]">
+                  <div className="bg-white rounded-2xl p-5 md:p-6 mb-4 border border-black/[0.06] hover:border-blue-primary/25 hover:shadow-lg hover:shadow-blue-primary/10 hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200">
                     <div className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-xl bg-blue-primary flex items-center justify-center shrink-0">
                         <span className="text-base font-semibold text-white">
-                          {games[currentIndex].number}
+                          {game.number}
                         </span>
                       </div>
                       <div>
                         <h3 className="text-lg md:text-xl font-semibold text-text-primary mb-1">
-                          {games[currentIndex].title}
+                          {game.title}
                         </h3>
                         <p className="text-text-muted text-sm md:text-base leading-relaxed">
-                          {games[currentIndex].description}
+                          {game.description}
                         </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Image placeholder - separate block */}
                   <div className="aspect-[16/10] bg-surface rounded-2xl flex items-center justify-center border border-black/[0.06]">
                     <div className="text-center">
@@ -100,39 +132,39 @@ export function ThreeGames() {
                       <p className="text-text-muted text-sm">Скриншот игры</p>
                     </div>
                   </div>
-                </motion.div>
-              </AnimatePresence>
+                </article>
+              ))}
             </div>
 
             {/* Navigation row - below the card */}
             <div className="flex items-center justify-center gap-4 mt-6">
               <button
                 onClick={goToPrevious}
-                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light active:scale-90 transition-transform duration-150 touch-manipulation select-none"
+                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:scale-105 hover:border-blue-primary/30 active:scale-90 transition-all duration-200 touch-manipulation select-none"
                 aria-label="Previous game"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              
+
               {/* Dots indicator */}
               <div className="flex items-center gap-2">
                 {games.map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => setCurrentIndex(i)}
-                    className={`h-2 rounded-full transition-transform duration-200 touch-manipulation ${
-                      i === currentIndex 
-                        ? 'bg-blue-primary w-6 scale-100' 
-                        : 'bg-black/20 hover:bg-black/30 w-2 active:scale-125'
+                    onClick={() => scrollToIndex(i)}
+                    className={`h-2 rounded-full transition-all duration-300 touch-manipulation ${
+                      i === currentIndex
+                        ? 'bg-blue-primary w-6'
+                        : 'bg-black/20 hover:bg-black/40 hover:scale-125 active:scale-125 w-2'
                     }`}
                     aria-label={`Go to game ${i + 1}`}
                   />
                 ))}
               </div>
-              
+
               <button
                 onClick={goToNext}
-                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light active:scale-90 transition-transform duration-150 touch-manipulation select-none"
+                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:scale-105 hover:border-blue-primary/30 active:scale-90 transition-all duration-200 touch-manipulation select-none"
                 aria-label="Next game"
               >
                 <ChevronRight className="w-5 h-5" />

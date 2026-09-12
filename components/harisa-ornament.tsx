@@ -38,7 +38,7 @@ export function HarisaOrnament({
       fill="none"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
-      style={{ overflow: 'visible', contain: 'layout paint' }}
+      style={{ overflow: 'visible' }}
       aria-hidden
     >
       <g transform="matrix(-0.84353932,0,0,0.84353932,-175.39664,60.520565)">
@@ -85,7 +85,6 @@ export function OrnamentCorner({
   return (
     <div
       className={`absolute ${positionClasses[position]} pointer-events-none select-none motion-reduce:hidden`}
-      style={{ contain: 'strict' }}
     >
       <HarisaOrnament 
         className={className}

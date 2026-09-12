@@ -221,7 +221,7 @@ export function AvailableSlots() {
                           <div className="bg-black/20 p-1.5 rounded-full flex items-center border border-white/10 w-full md:w-auto">
                             <button
                               onClick={() => setActiveGender('male')}
-                              className={`flex-1 md:flex-none px-6 py-3 rounded-full text-sm font-semibold transition-transform duration-150 touch-manipulation select-none active:scale-95 ${
+                              className={`flex-1 md:flex-none px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 touch-manipulation select-none hover:scale-[1.02] active:scale-95 ${
                                 activeGender === 'male' ? 'bg-white text-blue-primary shadow-md' : 'text-white/70 hover:text-white'
                               }`}
                             >
@@ -229,7 +229,7 @@ export function AvailableSlots() {
                             </button>
                             <button
                               onClick={() => setActiveGender('female')}
-                              className={`flex-1 md:flex-none px-6 py-3 rounded-full text-sm font-semibold transition-transform duration-150 touch-manipulation select-none active:scale-95 ${
+                              className={`flex-1 md:flex-none px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 touch-manipulation select-none hover:scale-[1.02] active:scale-95 ${
                                 activeGender === 'female' ? 'bg-white text-blue-primary shadow-md' : 'text-white/70 hover:text-white'
                               }`}
                             >
@@ -258,8 +258,8 @@ export function AvailableSlots() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.97 }}
                           transition={{ duration: 0.2 }}
-                          className={`bg-white rounded-3xl p-6 border ${
-                            isFull ? 'border-slate-200 opacity-60 grayscale' : 'border-slate-100 shadow-xl shadow-blue-900/5'
+                          className={`bg-white rounded-3xl p-6 border transition-all duration-200 ${
+                            isFull ? 'border-slate-200 opacity-60 grayscale' : 'border-slate-100 shadow-xl shadow-blue-900/5 hover:border-blue-200 hover:shadow-blue-900/10 hover:-translate-y-0.5'
                           } relative flex flex-col`}
                         >
                           <div className="flex justify-between items-start mb-5">
@@ -296,7 +296,7 @@ export function AvailableSlots() {
                             ) : (
                               <a 
                                 href={`https://harisa.site/login?slot=${slot.id}${typeof window !== 'undefined' && localStorage.getItem('harisa_promo') ? `&promo=${localStorage.getItem('harisa_promo')}` : ''}`}
-                                className="w-full py-4 px-6 bg-blue-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-dark active:scale-[0.98] transition-transform duration-150 touch-manipulation select-none group/btn"
+                                className="w-full py-4 px-6 bg-blue-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-dark hover:scale-[1.01] hover:shadow-lg hover:shadow-blue-primary/30 active:scale-[0.98] transition-all duration-200 touch-manipulation select-none group/btn"
                               >
                                 Записаться на это время
                                 <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />

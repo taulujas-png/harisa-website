@@ -12,12 +12,12 @@ interface RevealProps {
 export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ 
-        duration: 0.4, 
-        delay: Math.min(delay, 0.15),
+        duration: 0.5, 
+        delay: Math.min(delay, 0.2),
         ease: [0.16, 1, 0.3, 1] 
       }}
       className={className}
@@ -32,11 +32,11 @@ export function StaggerContainer({ children, className = "" }: { children: React
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-80px" }}
+      viewport={{ once: true, margin: "-50px" }}
       variants={{
         visible: {
           transition: {
-            staggerChildren: 0.06
+            staggerChildren: 0.08
           }
         }
       }}
@@ -51,12 +51,12 @@ export function StaggerItem({ children, className = "" }: { children: ReactNode;
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 16 },
+        hidden: { opacity: 0, y: 24 },
         visible: { 
           opacity: 1, 
           y: 0,
           transition: {
-            duration: 0.4,
+            duration: 0.5,
             ease: [0.16, 1, 0.3, 1]
           }
         }

@@ -50,7 +50,7 @@ export function CoreUSPs() {
         {/* Row 1: Large blue card + small white card */}
         <div className="grid md:grid-cols-5 gap-4 md:gap-6 mb-4 md:mb-6">
           <Reveal className="md:col-span-3">
-            <div className="blue-accent-card rounded-2xl p-6 md:p-8 h-full min-h-[240px] md:min-h-[280px] flex flex-col">
+            <div className="blue-accent-card rounded-2xl p-6 md:p-8 h-full min-h-[240px] md:min-h-[280px] flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-200">
               <SpeechBubbleIcon className="w-7 h-7 text-white/90 mb-5" />
               <h3 className="text-xl md:text-2xl font-semibold text-white mb-2">
                 Говоришь с первого урока
@@ -65,7 +65,7 @@ export function CoreUSPs() {
           </Reveal>
 
           <Reveal delay={0.1} className="md:col-span-2">
-            <div className="standard-card rounded-2xl p-6 md:p-8 h-full min-h-[240px] md:min-h-[280px] flex flex-col">
+            <div className="standard-card rounded-2xl p-6 md:p-8 h-full min-h-[240px] md:min-h-[280px] flex flex-col hover:-translate-y-1 hover:shadow-lg hover:border-blue-primary/20 transition-all duration-200">
               <GameIcon className="w-7 h-7 text-blue-primary mb-5" />
               <h3 className="text-xl md:text-2xl font-semibold text-text-primary mb-2">
                 Групповые тренажёры
@@ -82,7 +82,7 @@ export function CoreUSPs() {
 
         {/* Row 2: Full-width glass card */}
         <Reveal delay={0.2}>
-          <div className="glass-card rounded-2xl p-6 md:p-8">
+          <div className="glass-card rounded-2xl p-6 md:p-8 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200">
             <div className="flex flex-col md:flex-row md:items-center gap-5">
               <div className="flex-1">
                 <div className="flex items-start gap-4 mb-3">

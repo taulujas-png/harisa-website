@@ -35,7 +35,7 @@ export function FinalCTA() {
                 href="https://t.me/harisa"
                target="_blank"
                rel="noopener noreferrer"
-               className="inline-block bg-black text-blue-primary font-medium px-8 py-3.5 rounded-full text-base hover:bg-gray-900 active:scale-95 transition-transform duration-150 shadow-lg shadow-black/20 touch-manipulation select-none"
+               className="inline-block bg-black text-blue-primary font-medium px-8 py-3.5 rounded-full text-base hover:bg-gray-900 hover:scale-[1.03] hover:shadow-xl hover:shadow-black/25 active:scale-95 transition-all duration-200 shadow-lg shadow-black/20 touch-manipulation select-none"
              >
                Занять место
              </a>

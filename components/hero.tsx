@@ -29,13 +29,13 @@ export function Hero() {
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <a
                   href="#schedule"
-                 className="w-full sm:w-auto bg-black text-white text-base font-medium px-8 py-3.5 rounded-full hover:bg-gray-900 active:scale-95 transition-transform duration-150 shadow-lg shadow-black/25 touch-manipulation select-none"
+                 className="w-full sm:w-auto bg-black text-white text-base font-medium px-8 py-3.5 rounded-full hover:bg-gray-900 hover:scale-[1.03] hover:shadow-xl hover:shadow-black/30 active:scale-95 transition-all duration-200 shadow-lg shadow-black/25 touch-manipulation select-none"
                >
                  Занять место
                 </a>
                 <a
                   href="#contact"
-                 className="text-text-muted text-base hover:text-text-primary active:scale-95 transition-transform duration-150 px-4 py-2 touch-manipulation"
+                 className="text-text-muted text-base hover:text-text-primary hover:scale-105 active:scale-95 transition-all duration-200 px-4 py-2 touch-manipulation"
                >
                  Написать нам →
                 </a>

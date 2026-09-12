@@ -122,6 +122,15 @@
   transform: translateY(0);
 }
 
+/* Hide scrollbars on swipe rails, keep native scroll */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Glass card effect */
 .glass-card {
   background: rgba(255, 255, 255, 0.65);
