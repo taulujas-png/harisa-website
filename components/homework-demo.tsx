@@ -22,7 +22,7 @@ function Phone({ number, title, subtitle, children }: { number: string; title: s
         <div aria-hidden="true" className="mx-auto mt-3 mb-4 h-1.5 w-14 shrink-0 rounded-full bg-slate-200" />
         <div className="flex items-center justify-between border-b border-slate-100 px-5 pb-3 text-xs">
           <span className="font-semibold tracking-tight text-blue-primary">harisa</span>
-          <span className="rounded-full bg-blue-light px-2 py-1 text-[10px] font-medium text-blue-primary">Демо ДЗ · {number}/3</span>
+          <span className="rounded-full bg-blue-light px-2 py-1 text-[10px] font-medium text-blue-primary">{number}/3</span>
         </div>
         <div className="flex min-h-0 flex-1 flex-col px-4 pt-5 pb-4">
           <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
@@ -36,18 +36,24 @@ function Phone({ number, title, subtitle, children }: { number: string; title: s
 }
 
 function MatchGame() {
-  const [selected, setSelected] = useState<string | null>(null)
+  const [selected, setSelected] = useState<{ id: string; side: 'arabic' | 'russian' } | null>(null)
   const [matched, setMatched] = useState<string[]>([])
-  const [feedback, setFeedback] = useState('Начните с любого слова слева.')
+  const [feedback, setFeedback] = useState('Начните с любой карточки.')
   const [mistake, setMistake] = useState(false)
-  const reset = () => { setSelected(null); setMatched([]); setFeedback('Начните с любого слова слева.') }
-  const match = (id: string) => {
-    if (!selected) { setFeedback('Сначала выберите слово слева.'); return }
-    if (selected !== id) { setMistake(true); setFeedback('Попробуйте другой перевод — подсказка под словом.'); return }
+  const reset = () => { setSelected(null); setMatched([]); setFeedback('Начните с любой карточки.') }
+  const selectCard = (id: string, side: 'arabic' | 'russian') => {
+    if (!selected || selected.side === side) {
+      if (selected?.id === id) { setSelected(null); setFeedback('Начните с любой карточки.'); return }
+      setSelected({ id, side })
+      setFeedback(side === 'arabic' ? 'Теперь найдите перевод.' : 'Теперь найдите арабское слово.')
+      return
+    }
+    if (selected.id !== id) { setMistake(true); setFeedback('Попробуйте другую карточку — подсказка под арабским словом.'); return }
     const next = [...matched, id]
     setMatched(next); setSelected(null)
     setFeedback(next.length === words.length ? 'Все три пары найдены! Отличное начало.' : 'Верно! Найдите следующую пару.')
   }
+
   return (
     <Phone number="1" title="Найдите пары" subtitle="Соедините арабское слово с переводом. Подсказки помогут.">
       <div className="mb-3 flex items-center justify-between text-xs">
@@ -55,10 +61,10 @@ function MatchGame() {
         <button type="button" onClick={reset} aria-label="Начать поиск пар заново" className={`p-2 text-slate-400 hover:text-blue-primary ${focus}`}><RotateCcw size={14} /></button>
       </div>
       <div onAnimationEnd={() => setMistake(false)} className={`homework-pairs grid grid-cols-2 gap-2 ${mistake ? 'homework-shake' : ''}`}>
-        <div className="grid gap-2">{words.map(w => <button type="button" key={w.id} disabled={matched.includes(w.id)} aria-pressed={selected === w.id} aria-label={`Арабское слово: ${w.ar}`} onClick={() => { setSelected(w.id); setFeedback('Теперь нажмите на перевод справа.') }} data-matched={matched.includes(w.id)} className={`homework-tile h-[67px] rounded-xl border px-1 transition-colors ${focus} ${matched.includes(w.id) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : selected === w.id ? 'border-blue-primary bg-blue-light' : 'border-slate-200 bg-white hover:border-blue-300'}`}>
+        <div className="grid gap-2">{words.map(w => <button type="button" key={w.id} disabled={matched.includes(w.id)} aria-pressed={selected?.side === 'arabic' && selected.id === w.id} aria-label={`Арабское слово: ${w.ar}`} onClick={() => selectCard(w.id, 'arabic')} data-matched={matched.includes(w.id)} className={`homework-tile h-[67px] rounded-xl border px-1 transition-colors ${focus} ${matched.includes(w.id) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : selected?.side === 'arabic' && selected.id === w.id ? 'border-blue-primary bg-blue-light' : 'border-slate-200 bg-white hover:border-blue-300'}`}>
           <span lang="ar" dir="rtl" className="block text-2xl leading-8">{w.ar}</span><span className="block text-[9px] text-text-muted">{w.sound} · {w.ru}</span>
         </button>)}</div>
-        <div className="grid gap-2">{translations.map(w => <button type="button" key={w.id} disabled={matched.includes(w.id)} onClick={() => match(w.id)} data-matched={matched.includes(w.id)} className={`homework-tile flex h-[67px] items-center justify-center gap-1 rounded-xl border text-sm transition-colors ${focus} ${matched.includes(w.id) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-slate-200 bg-white hover:border-blue-300'}`}>{w.ru}{matched.includes(w.id) && <Check size={13} />}</button>)}</div>
+        <div className="grid gap-2">{translations.map(w => <button type="button" key={w.id} disabled={matched.includes(w.id)} aria-pressed={selected?.side === 'russian' && selected.id === w.id} onClick={() => selectCard(w.id, 'russian')} data-matched={matched.includes(w.id)} className={`homework-tile flex h-[67px] items-center justify-center gap-1 rounded-xl border text-sm transition-colors ${focus} ${matched.includes(w.id) ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : selected?.side === 'russian' && selected.id === w.id ? 'border-blue-primary bg-blue-light' : 'border-slate-200 bg-white hover:border-blue-300'}`}>{w.ru}{matched.includes(w.id) && <Check size={13} />}</button>)}</div>
       </div>
       <div className="homework-progress" aria-hidden="true"><span style={{ width: `${matched.length / 3 * 100}%` }} /></div>
       <p role="status" className={`mt-auto pt-4 text-xs leading-relaxed ${matched.length === 3 ? 'text-emerald-700' : 'text-text-muted'}`}>{feedback}</p>

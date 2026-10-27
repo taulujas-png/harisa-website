@@ -28,13 +28,17 @@ export function ThreeGames() {
     if (!element || !viewport) return
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0
+    let top = 0
+    let travel = 1
+    const measure = () => {
+      top = parseFloat(getComputedStyle(viewport).top) || 0
+      travel = element.offsetHeight - viewport.offsetHeight
+    }
     const draw = () => {
       frame = 0
-      setReducedMotion(motion.matches)
       if (motion.matches) return
       const rect = element.getBoundingClientRect()
-      const top = parseFloat(getComputedStyle(viewport).top) || 0
-      const travel = element.offsetHeight - viewport.offsetHeight
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return
       const progress = clamp((top - rect.top) / Math.max(1, travel))
       element.dataset.progress = progress.toFixed(4)
       const introIn = smooth((progress + .025) / .09)
@@ -51,6 +55,8 @@ export function ThreeGames() {
         const enter = index === 0 ? smooth((progress - .205) / .08) : smooth((local + .14) / .28)
         const leave = index === 2 ? 0 : smooth((local - .86) / .28)
         const opacity = enter * (1 - leave)
+        panel.style.visibility = opacity > 0 ? 'visible' : 'hidden'
+        if (opacity <= 0) return
         panel.style.setProperty('--panel-opacity', `${opacity}`)
         panel.style.setProperty('--copy-y', `${(1 - enter) * 44 - leave * 32}px`)
         panel.style.setProperty('--board-y', `${(1 - enter) * (index === 0 ? 70 : 26) - leave * 28}px`)
@@ -67,14 +73,18 @@ export function ThreeGames() {
       })
     }
     const update = () => { if (!frame) frame = requestAnimationFrame(draw) }
-    const observer = new ResizeObserver(update)
+    const resize = () => { measure(); update() }
+    const motionChanged = () => { setReducedMotion(motion.matches); if (motion.matches) panels.current.forEach(panel => { if (panel) panel.style.visibility = 'visible' }); resize() }
+    const observer = new ResizeObserver(resize)
     observer.observe(viewport)
     observer.observe(element)
+    setReducedMotion(motion.matches)
+    measure()
     draw()
     window.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    motion.addEventListener('change', update)
-    return () => { cancelAnimationFrame(frame); observer.disconnect(); window.removeEventListener('scroll', update); window.removeEventListener('resize', update); motion.removeEventListener('change', update) }
+    window.addEventListener('resize', resize)
+    motion.addEventListener('change', motionChanged)
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); window.removeEventListener('scroll', update); window.removeEventListener('resize', resize); motion.removeEventListener('change', motionChanged) }
   }, [])
 
   const goTo = (index: number) => {
@@ -91,8 +101,8 @@ export function ThreeGames() {
     <div ref={stage} className="lesson-story-stage">
       <div ref={intro} className="lesson-story-intro" aria-hidden={!reducedMotion && active !== -1}>
         <p className="story-eyebrow">УЧИМСЯ ЧЕРЕЗ ИГРУ</p>
-        <h2 id="lesson-story-title">Не просто запоминать.<br /><span>Начать говорить.</span></h2>
-        <p className="story-intro-text">На уроке арабский становится частью игры. Вы слушаете, объясняете и отвечаете — вместе с группой и поддержкой преподавателя.</p>
+        <h2 id="lesson-story-title">Групповая практика —<br /><span>часть нашей методики.</span></h2>
+        <p className="story-intro-text">В играх на общей доске вы слушаете, объясняете и отвечаете на арабском — вместе с группой и при поддержке преподавателя.</p>
         <span className="story-scroll-cue"><ArrowDown size={16} />Листайте — заглянем на урок</span>
       </div>
       {games.map((game, index) => <div key={game.id} ref={el => { panels.current[index] = el }} className={`lesson-story-panel story-game-${index}`} aria-hidden={!reducedMotion && active !== index} inert={!reducedMotion && active !== index} data-active={reducedMotion || active === index}>
@@ -118,28 +128,28 @@ export function ThreeGames() {
     </div>
     <style jsx global>{`
       #lesson-games { position:relative; height:460svh; background:#fff; overflow-x:clip; }
-      #lesson-games .lesson-story-stage { position:sticky; top:80px; height:calc(100svh - 80px); min-height:480px; max-width:1280px; margin:auto; }
+      #lesson-games .lesson-story-stage { position:sticky; top:80px; height:calc(100svh - 80px); min-height:480px; max-width:1152px; margin:auto; }
       #lesson-games .lesson-story-intro { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:32px 24px; text-align:center; opacity:var(--intro-opacity,1); transform:translateY(var(--intro-y,0px)) scale(var(--intro-scale,1)); pointer-events:none; }
       #lesson-games .story-eyebrow { font-size:10px; font-weight:600; letter-spacing:.14em; color:#2563eb; margin-bottom:22px; }
       #lesson-games h2 { font-size:clamp(38px,5.8vw,78px); line-height:1.12; font-weight:600; letter-spacing:-.045em; color:#0f172a; }
       #lesson-games h2 span { color:#2563eb; }
       #lesson-games .story-intro-text { max-width:520px; margin-top:28px; color:#64748b; font-size:18px; line-height:1.7; }
       #lesson-games .story-scroll-cue { display:flex; align-items:center; gap:9px; margin-top:38px; font-size:12px; color:#94a3b8; }
-      #lesson-games .lesson-story-panel { position:absolute; inset:0; display:grid; grid-template-columns:minmax(0,.85fr) minmax(0,1.2fr) 76px; grid-template-rows:auto 24px; column-gap:32px; align-content:center; align-items:center; padding:28px 40px; opacity:var(--panel-opacity,0); pointer-events:none; }
+      #lesson-games .lesson-story-panel { position:absolute; inset:0; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,470px) 58px; grid-template-rows:auto 24px; column-gap:16px; align-content:center; align-items:center; padding:28px 40px; opacity:var(--panel-opacity,0); pointer-events:none; }
       #lesson-games .lesson-story-panel[data-active=true] { pointer-events:auto; }
       #lesson-games .story-copy { transform:translateY(var(--copy-y,44px)); min-width:0; }
       #lesson-games .story-copy .story-eyebrow { font-size:9px; margin-bottom:20px; }
-      #lesson-games .story-skill { font-size:12px; color:#2563eb; font-weight:500; margin-bottom:10px; }
+      #lesson-games .story-skill { font-size:14px; color:#2563eb; font-weight:500; margin-bottom:10px; }
       #lesson-games h3 { font-size:clamp(25px,3vw,38px); font-weight:600; line-height:1.15; letter-spacing:-.035em; color:#0f172a; margin-bottom:20px; }
-      #lesson-games .story-description { font-size:15px; line-height:1.75; color:#64748b; max-width:340px; }
-      #lesson-games .story-action { margin-top:20px; font-size:11px; color:#2563eb; }
+      #lesson-games .story-description { font-size:17px; line-height:1.7; color:#64748b; max-width:410px; }
+      #lesson-games .story-action { margin-top:20px; font-size:13px; color:#2563eb; }
       #lesson-games .story-navigation { display:flex; gap:12px; margin-top:32px; }
       #lesson-games .story-navigation button { flex:1; min-width:0; text-align:left; font-size:10px; color:#94a3b8; padding:8px 0; }
       #lesson-games .story-navigation button[aria-current] { color:#2563eb; }
       #lesson-games .story-navigation button:focus-visible { outline:2px solid #2563eb; outline-offset:4px; border-radius:3px; }
       #lesson-games .story-nav-track { display:block; height:2px; width:100%; background:#e2e8f0; margin-bottom:9px; overflow:hidden; }
       #lesson-games .story-nav-track>span { display:block; height:100%; width:100%; transform-origin:left; background:#2563eb; }
-      #lesson-games .story-board { width:100%; max-width:min(470px,63svh); aspect-ratio:1; position:relative; justify-self:center; transform:translate(var(--board-x,0px),var(--board-y,40px)) scale(var(--board-scale,.95)) rotate(var(--board-rotate,0deg)); }
+      #lesson-games .story-board { width:100%; max-width:min(470px,63svh); aspect-ratio:1; position:relative; justify-self:end; transform:translate(var(--board-x,0px),var(--board-y,40px)) scale(var(--board-scale,.95)) rotate(var(--board-rotate,0deg)); }
       #lesson-games .story-board img { display:block; width:100%; height:100%; object-fit:contain; border-radius:24px; box-shadow:0 4px 12px rgb(15 23 42 / .025),0 24px 48px -16px rgb(37 99 235 / .14),0 48px 80px -32px rgb(15 23 42 / .16); pointer-events:none; user-select:none; }
       #lesson-games .story-people { display:flex; flex-direction:column; gap:32px; align-items:center; transform:translateY(var(--people-y,22px)); }
       #lesson-games .story-person { display:flex; flex-direction:column; align-items:center; position:relative; }
@@ -156,7 +166,7 @@ export function ThreeGames() {
       #lesson-games .story-speech { position:absolute; right:calc(100% + 12px); top:6px; padding:8px 14px; border-radius:12px 12px 2px 12px; background:white; box-shadow:0 4px 20px #0f172a14; color:#2563eb; font-size:23px; white-space:nowrap; opacity:var(--speech,0); transform:translateY(calc(8px - var(--speech,0) * 8px)); }
       #lesson-games .story-call { position:absolute; top:12px; left:50%; transform:translate(-50%,calc(10px - var(--call,0) * 10px)); opacity:var(--call,0); display:flex; align-items:center; gap:7px; width:max-content; max-width:95%; padding:10px 13px; border-radius:12px; background:#2563ebf2; box-shadow:0 6px 22px #2563eb20; color:white; font-size:11px; pointer-events:none; }
       #lesson-games .story-disclosure { grid-column:2; text-align:center; font-size:9px; color:#94a3b8; margin-top:14px; }
-      @media(max-width:1023px) and (min-width:768px) { #lesson-games .lesson-story-panel { padding:24px; gap:20px; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr) 54px; } #lesson-games .story-avatar { width:46px; height:46px; font-size:20px; } #lesson-games .story-description { font-size:13px; } }
+      @media(max-width:1023px) and (min-width:768px) { #lesson-games .lesson-story-panel { padding:24px; gap:12px; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr) 54px; } #lesson-games .story-avatar { width:46px; height:46px; font-size:20px; } #lesson-games .story-description { font-size:15px; } }
       @media(max-width:767px) {
         #lesson-games { height:450svh; }
         #lesson-games .lesson-story-stage { top:76px; height:calc(100svh - 76px); min-height:580px; }
@@ -168,17 +178,17 @@ export function ThreeGames() {
         #lesson-games .story-copy .story-eyebrow { font-size:8px; margin-bottom:9px; }
         #lesson-games .story-skill { font-size:10px; margin-bottom:5px; }
         #lesson-games h3 { font-size:25px; margin-bottom:10px; }
-        #lesson-games .story-description { font-size:12px; line-height:1.65; max-width:100%; }
+        #lesson-games .story-description { font-size:13px; line-height:1.6; max-width:100%; }
         #lesson-games .story-action { display:none; }
         #lesson-games .story-navigation { margin-top:10px; gap:14px; }
         #lesson-games .story-navigation button { font-size:9px; padding:6px 0; }
         #lesson-games .story-nav-track { margin-bottom:5px; }
-        #lesson-games .story-people { grid-row:2; flex-direction:row; justify-content:center; gap:34px; }
+        #lesson-games .story-people { grid-row:2; margin-bottom:-6px; flex-direction:row; justify-content:center; gap:34px; }
         #lesson-games .story-avatar { width:42px; height:42px; font-size:18px; }
         #lesson-games .story-person>span { margin-top:4px; font-size:9px; }
         #lesson-games .story-person small { position:absolute; top:56px; font-size:7px; }
         #lesson-games .story-reaction { width:21px; height:21px; font-size:14px; right:-6px; }
-        #lesson-games .story-board { grid-row:3; max-width:min(340px,40svh); }
+        #lesson-games .story-board { grid-row:3; max-width:min(340px,40svh); justify-self:center; }
         #lesson-games .story-disclosure { grid-row:4; grid-column:1; font-size:8px; margin-top:0; }
         #lesson-games .story-speech { top:6px; right:auto; left:calc(100% + 7px); font-size:18px; padding:6px 9px; }
         #lesson-games .story-call { padding:8px 10px; font-size:9px; top:8px; }
