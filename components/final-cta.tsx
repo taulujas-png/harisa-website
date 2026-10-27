@@ -26,16 +26,14 @@ export function FinalCTA() {
 
           <StaggerItem>
             <p className="text-base md:text-lg text-text-muted font-normal mb-10 max-w-xl mx-auto">
-              Новый поток стартует в начале каждого месяца. Группы небольшие — запись закрывается при наборе.
+              Выберите открытый набор и подходящее расписание. Запись закрывается, когда группа набрана.
             </p>
           </StaggerItem>
 
            <StaggerItem>
               <a
-                href="https://t.me/harisa"
-               target="_blank"
-               rel="noopener noreferrer"
-               className="inline-block bg-black text-blue-primary font-medium px-8 py-3.5 rounded-full text-base hover:bg-gray-900 hover:scale-[1.03] hover:shadow-xl hover:shadow-black/25 active:scale-95 transition-all duration-200 shadow-lg shadow-black/20 touch-manipulation select-none"
+                href="#schedule"
+               className="inline-block bg-black text-white font-medium px-8 py-3.5 rounded-full text-base hover:bg-gray-900 hover:scale-[1.03] hover:shadow-xl hover:shadow-black/25 active:scale-95 transition-all duration-200 shadow-lg shadow-black/20 touch-manipulation select-none"
              >
                Занять место
              </a>

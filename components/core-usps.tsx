@@ -42,7 +42,7 @@ export function CoreUSPs() {
           </StaggerItem>
           <StaggerItem>
             <p className="text-text-muted text-base md:text-lg mb-10">
-              Три вещи, которых нет больше нигде
+              Живые уроки, групповые игры и практика между занятиями
             </p>
           </StaggerItem>
         </StaggerContainer>
@@ -56,7 +56,7 @@ export function CoreUSPs() {
                 Говоришь с первого урока
               </h3>
               <p className="text-white/80 text-base leading-relaxed mb-auto">
-                Никаких лекций. 80% занятия — ты говоришь, слышишь, отвечаешь на арабском.
+                С первого месяца изучаете базовые слова для общения, слушаете речь и пробуете отвечать на арабском.
               </p>
               <span className="inline-block bg-white/20 text-white text-[13px] font-medium px-4 py-1.5 rounded-full w-fit mt-5">
                 Живая практика
@@ -92,7 +92,7 @@ export function CoreUSPs() {
                       Не курс. Среда.
                     </h3>
                     <p className="text-text-muted text-base leading-relaxed">
-                      Весь формат заточен под живое взаимодействие. Единомышленники находят друг друга, практикуются вместе — и растут быстрее, чем в одиночку. Учитель направляет, группа тянет вперёд.
+                      На живых уроках преподаватель направляет практику, а группа помогает применять новые слова и фразы. Мужчины и женщины занимаются в отдельных группах с преподавателем своего пола.
                     </p>
                   </div>
                 </div>

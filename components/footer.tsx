@@ -38,7 +38,7 @@ export function Footer() {
           {/* Social icons */}
           <div className="flex gap-3">
             <a 
-              href="https://t.me/harisa" 
+              href="https://t.me/+996226180075"
               target="_blank" 
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-text-muted hover:text-blue-primary hover:bg-blue-light transition-colors"
@@ -54,7 +54,7 @@ export function Footer() {
               <InstagramIcon className="w-4 h-4" />
             </a>
             <a 
-              href="https://wa.me/996700000000" 
+              href="https://wa.me/996226180075"
               target="_blank" 
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-text-muted hover:text-blue-primary hover:bg-blue-light transition-colors"

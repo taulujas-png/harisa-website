@@ -3,10 +3,10 @@
 import { Reveal } from './reveal'
 
 const stats = [
-  { number: "80%", label: "урока — практика" },
-  { number: "60", label: "слов в месяц" },
-  { number: "3", label: "месяца" },
-  { number: "3 000", label: "сом/мес" },
+  { number: "3", label: "месяца — первый модуль" },
+  { number: "45", label: "минут — один урок" },
+  { number: "Онлайн", label: "с преподавателем и группой" },
+  { number: "Игры", label: "для практики между уроками" },
 ]
 
 export function StatsBar() {

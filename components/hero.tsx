@@ -22,6 +22,7 @@ export function Hero() {
           <StaggerItem>
             <p className="text-base md:text-lg text-text-muted font-normal mb-10 max-w-xl">
               Живым, а не в учебнике.
+              <span className="block mt-3">Арабский с нуля: учимся понимать базовую речь фусха и выражать свои мысли на живых уроках.</span>
             </p>
           </StaggerItem>
 
@@ -34,13 +35,16 @@ export function Hero() {
                  Занять место
                 </a>
                 <a
-                  href="#contact"
+                  href="https://wa.me/996226180075"
                  className="text-text-muted text-base hover:text-text-primary hover:scale-105 active:scale-95 transition-all duration-200 px-4 py-2 touch-manipulation"
                >
                  Написать нам →
                 </a>
               </div>
            </StaggerItem>
+          <StaggerItem>
+            <a href="#demo" className="inline-block text-blue-primary text-sm font-medium mt-6 py-2 hover:underline underline-offset-4">Сначала попробовать мини-игру ↓</a>
+          </StaggerItem>
         </StaggerContainer>
       </div>
     </section>

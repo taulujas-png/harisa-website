@@ -44,25 +44,16 @@ function CoinIcon({ className = "" }: { className?: string }) {
   )
 }
 
-function ShieldCheckIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      <polyline points="9 12 11 14 15 10" />
-    </svg>
-  )
-}
-
 const formats = [
   {
     icon: VideoIcon,
     title: "Онлайн · Живые уроки",
-    description: "Собственная платформа — разработана так, чтобы связь была стабильной даже без высокоскоростного интернета. Работает с телефона. Никаких сбоев посреди урока."
+    description: "Живые занятия на собственной платформе: преподаватель, группа и интерактивная доска. Можно заниматься с телефона."
   },
   {
     icon: CalendarIcon,
     title: "3 раза в неделю",
-    description: "45 минут. Расписание фиксируется при записи и не меняется весь модуль."
+    description: "Урок длится 45 минут. Выберите подходящее расписание среди открытых наборов."
   },
   {
     icon: GamepadIcon,
@@ -73,11 +64,6 @@ const formats = [
     icon: CoinIcon,
     title: "Динары",
     description: "Внутренняя валюта за активность. Накопил — получил скидку до 1 000 сом на следующий месяц."
-  },
-  {
-    icon: ShieldCheckIcon,
-    title: "Smart Exam",
-    description: "Каждый 12-й урок — срез знаний с учителем из другой группы. Объективно по конструкции."
   }
 ]
 

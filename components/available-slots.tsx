@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Clock, CheckCircle2, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Reveal } from './reveal';
+import { PlatformLink } from './platform-link';
+import { SUPPORT_URL } from '@/lib/marketing';
 
 interface CourseInfo { title: string; price_per_month?: number }
 
@@ -28,98 +30,42 @@ function getCourse(s: Slot): CourseInfo | null {
 }
 
 export function AvailableSlots() {
-  const [slots, setSlots] = useState<Slot[]>(() => {
-    // Stale-first: instant cached render, no blank screen (theo-performance #2)
-    if (typeof window === 'undefined') return [];
-    try {
-      const cached = localStorage.getItem('harisa_slots_cache');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {}
-    return [];
-  });
-  const [loading, setLoading] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    try {
-      const cached = localStorage.getItem('harisa_slots_cache');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return false;
-      }
-    } catch {}
-    return true;
-  });
-  const [activeGender, setActiveGender] = useState<'male' | 'female' | 'all'>(() => {
-    if (typeof window === 'undefined') return 'all';
-    try {
-      const cached = localStorage.getItem('harisa_slots_cache');
-      if (cached) {
-        const parsed: Slot[] = JSON.parse(cached);
-        const hasMale = parsed.some(s => s.gender === 'male');
-        const hasFemale = parsed.some(s => s.gender === 'female');
-        if (hasMale && !hasFemale) return 'male';
-        if (!hasMale && hasFemale) return 'female';
-        if (hasMale && hasFemale) return 'male';
-      }
-    } catch {}
-    return 'all';
-  });
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [activeGender, setActiveGender] = useState<'male' | 'female' | 'all'>('all');
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      setFailed(true);
+      setLoading(false);
+      controller.abort();
+    }, 12000);
     async function fetchSlots() {
       try {
+        if (!supabase) throw new Error('Supabase unavailable');
         const { data, error } = await supabase
           .from('slots')
           .select('id, name, schedule_type, description, time_start, price, gender, max_students, current_students, is_open, courses(title, price_per_month)')
+          .eq('is_open', true)
           .order('schedule_type', { ascending: true })
-          .limit(24);
-
-        if (cancelled) return;
-        if (error) {
-          console.error('Error fetching slots:', error);
-          if (slots.length === 0) {
-            setSlots([
-              { id: '1', name: 'Арабский язык с нуля', schedule_type: 'Пн / Ср / Пт', time_start: '18:00', price: 3000, gender: 'male', max_students: 12, current_students: 5, is_open: true },
-              { id: '2', name: 'Арабский язык с нуля', schedule_type: 'Вт / Чт / Сб', time_start: '18:00', price: 3000, gender: 'female', max_students: 12, current_students: 12, is_open: false },
-              { id: '3', name: 'Арабский язык с нуля', schedule_type: 'Пн / Ср / Пт', time_start: '20:00', price: 3000, gender: 'male', max_students: 12, current_students: 11, is_open: true },
-            ]);
-            setActiveGender('male');
-          }
-          return;
-        }
-
-        if (data && data.length > 0) {
-          const typed = data as unknown as Slot[];
-          setSlots(typed);
-          try { localStorage.setItem('harisa_slots_cache', JSON.stringify(typed)); } catch {}
-          // Auto-select gender tab based on available slots if there's only one gender
-          const hasMale = data.some(s => s.gender === 'male');
-          const hasFemale = data.some(s => s.gender === 'female');
-          if (hasMale && !hasFemale) setActiveGender('male');
-          else if (!hasMale && hasFemale) setActiveGender('female');
-          else if (hasMale && hasFemale) setActiveGender(prev => prev === 'all' ? 'male' : prev);
-        } else if (slots.length === 0) {
-          // Fallback MVP slots if DB is empty
-          setSlots([
-            { id: '1', name: 'Арабский язык с нуля', schedule_type: 'Пн / Ср / Пт', time_start: '18:00', price: 3000, gender: 'male', max_students: 12, current_students: 5, is_open: true },
-            { id: '2', name: 'Арабский язык с нуля', schedule_type: 'Вт / Чт / Сб', time_start: '18:00', price: 3000, gender: 'female', max_students: 12, current_students: 12, is_open: false },
-            { id: '3', name: 'Арабский язык с нуля', schedule_type: 'Пн / Ср / Пт', time_start: '20:00', price: 3000, gender: 'male', max_students: 12, current_students: 11, is_open: true },
-          ]);
-          setActiveGender('male');
-        }
-      } catch (err) {
-        console.error('Failed to fetch slots:', err);
+          .abortSignal(controller.signal);
+        if (controller.signal.aborted) return;
+        if (error) throw error;
+        const items = ((data || []) as unknown as Slot[]).filter(s => s.current_students < s.max_students);
+        setSlots(items);
+        if (items.some(s => s.gender === 'male')) setActiveGender('male');
+        else if (items.some(s => s.gender === 'female')) setActiveGender('female');
+      } catch {
+        if (!controller.signal.aborted) setFailed(true);
       } finally {
-        if (!cancelled) setLoading(false);
+        clearTimeout(timeout);
+        if (!controller.signal.aborted) setLoading(false);
       }
     }
-
-    fetchSlots();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void fetchSlots();
+    return () => { controller.abort(); clearTimeout(timeout); };
   }, []);
 
   // Filter slots based on the active gender toggle
@@ -148,7 +94,7 @@ export function AvailableSlots() {
               Выберите удобное расписание
             </h2>
             <p className="text-blue-primary/60 text-sm md:text-base">
-              Бронируйте место прямо сейчас. Новые группы стартуют в начале каждого месяца.
+              Выберите открытый набор и удобное время. После регистрации на платформе вы сможете перейти к оплате.
             </p>
           </Reveal>
         </div>
@@ -172,6 +118,11 @@ export function AvailableSlots() {
               ))}
             </div>
           </div>
+        ) : slots.length === 0 ? (
+          <div className="text-center bg-white rounded-3xl p-8 border border-slate-100" role="status">
+            <p className="text-text-muted mb-4">{failed ? 'Не удалось загрузить расписание. Обновите страницу или напишите нам.' : 'Сейчас нет доступных групп. Напишите нам о ближайшем наборе.'}</p>
+            <a href={SUPPORT_URL} className="text-blue-primary font-semibold">Написать в WhatsApp →</a>
+          </div>
         ) : (
           <div className="space-y-16">
             {Object.entries(groupedSlots).map(([courseName, courseSlots]) => (
@@ -187,13 +138,13 @@ export function AvailableSlots() {
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex-1">
                         <span className="inline-block px-3 py-1 bg-white/10 text-white text-xs font-semibold rounded-full mb-4 border border-white/20">
-                          Первый модуль — 3 месяца
+                          Онлайн-обучение
                         </span>
                         <h3 className="text-3xl md:text-4xl font-bold text-white mb-2">{courseName}</h3>
                         
                         <div className="flex items-baseline gap-2 mt-4 mb-6">
                           <span className="text-5xl font-semibold text-white leading-none">
-                            {getCourse(courseSlots[0])?.price_per_month ? getCourse(courseSlots[0])!.price_per_month!.toLocaleString() : '3 000'}
+                            {(getCourse(courseSlots[0])?.price_per_month ?? courseSlots[0].price)?.toLocaleString('ru-RU') ?? 'Уточняется'}
                           </span>
                           <span className="text-white/80 text-lg">сом / мес</span>
                         </div>
@@ -201,7 +152,7 @@ export function AvailableSlots() {
                         <ul className="space-y-3">
                           <li className="flex items-start gap-3 text-white/90 text-sm md:text-base">
                             <CheckCircle2 className="w-5 h-5 text-white shrink-0 mt-0.5" />
-                            <span>Живые уроки 3 раза в неделю</span>
+                            <span>Живые уроки по 45 минут</span>
                           </li>
                           <li className="flex items-start gap-3 text-white/90 text-sm md:text-base">
                             <CheckCircle2 className="w-5 h-5 text-white shrink-0 mt-0.5" />
@@ -294,13 +245,13 @@ export function AvailableSlots() {
                                 Набор закрыт
                               </button>
                             ) : (
-                              <a 
-                                href={`https://harisa.site/login?slot=${slot.id}${typeof window !== 'undefined' && localStorage.getItem('harisa_promo') ? `&promo=${localStorage.getItem('harisa_promo')}` : ''}`}
+                              <PlatformLink
+                                slotId={slot.id}
                                 className="w-full py-4 px-6 bg-blue-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-dark hover:scale-[1.01] hover:shadow-lg hover:shadow-blue-primary/30 active:scale-[0.98] transition-all duration-200 touch-manipulation select-none group/btn"
                               >
                                 Записаться на это время
                                 <ChevronRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                              </a>
+                              </PlatformLink>
                             )}
                           </div>
                         </motion.div>

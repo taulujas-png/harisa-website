@@ -5,8 +5,8 @@ import { MissionQuote } from '@/components/mission-quote'
 import { CoreUSPs } from '@/components/core-usps'
 import { HowLessonWorks } from '@/components/how-lesson-works'
 import { ThreeGames } from '@/components/three-games'
+import { HomeworkDemo } from '@/components/homework-demo'
 import { LessonFormat } from '@/components/lesson-format'
-import { Teacher } from '@/components/teacher'
 import { FAQ } from '@/components/faq'
 import { FinalCTA } from '@/components/final-cta'
 import { Footer } from '@/components/footer'
@@ -22,8 +22,8 @@ export default function Home() {
       <CoreUSPs />
       <HowLessonWorks />
       <ThreeGames />
+      <HomeworkDemo />
       <LessonFormat />
-      <Teacher />
       <AvailableSlots />
       <FAQ />
       <FinalCTA />

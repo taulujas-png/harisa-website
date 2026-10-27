@@ -1,34 +1,53 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { BellRing, ChevronLeft, ChevronRight } from 'lucide-react'
+import Image from 'next/image'
 import { Reveal } from './reveal'
 
 const games = [
   {
     number: "01",
     title: "Арабский Миллионер",
-    description: "Один отвечает. Остальные делают ставки Динарами. Потом — блиц для всех одновременно.",
-    image: "/placeholder-game-1.png"
+    description: "Отвечайте на вопросы по арабскому. Пока один игрок выбирает ответ, остальные тоже участвуют в раунде.",
+    image: "/images/games/millionaire.png",
+    width: 1280,
+    height: 800
   },
   {
     number: "02",
     title: "Крокодил / Элиас",
-    description: "Один объясняет слово. Платформа диктует каждому условие: «используй цвет» или «задай вопрос».",
-    image: "/placeholder-game-2.png"
+    description: "Объясняйте слово с заданным условием, а команда попробует его угадать. Практика слов в живой речи.",
+    image: "/images/games/v2/crocodile.png",
+    width: 650,
+    height: 650
   },
   {
     number: "03",
     title: "Шпион 2.0",
-    description: "11 знают слово, один — нет. Каждый называет ассоциацию за 5 секунд. Шпион может перехватить банк.",
-    image: "/placeholder-game-3.png"
+    description: "Задавайте друг другу вопросы о тайной локации и попробуйте вычислить шпиона. Нужно и слушать, и говорить.",
+    image: "/images/games/v2/spy.png",
+    width: 650,
+    height: 650
   }
 ]
 
 export function ThreeGames() {
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [calledOut, setCalledOut] = useState(false)
+  const calloutTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const railRef = useRef<HTMLDivElement>(null)
   const lockRef = useRef(false)
+
+  useEffect(() => () => {
+    if (calloutTimer.current) clearTimeout(calloutTimer.current)
+  }, [])
+
+  const showCallout = () => {
+    if (calloutTimer.current) clearTimeout(calloutTimer.current)
+    setCalledOut(true)
+    calloutTimer.current = setTimeout(() => setCalledOut(false), 3000)
+  }
 
   const scrollToIndex = useCallback((i: number) => {
     const rail = railRef.current
@@ -82,10 +101,10 @@ export function ThreeGames() {
       <div className="max-w-4xl mx-auto">
         <Reveal>
           <h2 className="text-2xl md:text-3xl font-semibold text-text-primary text-center mb-3">
-            Три игры, которых нет нигде
+            Игры на живом уроке
           </h2>
           <p className="text-text-muted text-center text-base md:text-lg mb-10">
-            Пока один отвечает — остальные 11 тоже в деле
+            Играете вместе с группой. Преподаватель объясняет правила и ведёт занятие.
           </p>
         </Reveal>
 
@@ -121,17 +140,45 @@ export function ThreeGames() {
                     </div>
                   </div>
 
-                  {/* Image placeholder - separate block */}
-                  <div className="aspect-[16/10] bg-surface rounded-2xl flex items-center justify-center border border-black/[0.06]">
-                    <div className="text-center">
-                      <div className="w-12 h-12 rounded-xl bg-blue-light flex items-center justify-center mx-auto mb-2">
-                        <svg className="w-6 h-6 text-blue-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                  {game.number === '01' ? (
+                    <figure>
+                      <div className="relative overflow-hidden rounded-2xl border border-black/[0.06] bg-[#f5f8fc] px-4 py-6 sm:px-8 sm:py-8">
+                        <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-4 sm:gap-5">
+                          <div className="flex items-start justify-center gap-5 sm:gap-8" aria-label="Пример участников урока">
+                            {[
+                              { initial: 'А', label: 'Ахмад', color: 'from-violet-50 to-violet-100 text-violet-700', speaking: true },
+                              { initial: 'О', label: 'Омар', color: 'from-amber-50 to-amber-100 text-amber-700', speaking: false },
+                              { initial: 'А', label: 'Али', color: 'from-sky-50 to-sky-100 text-sky-700', speaking: false },
+                            ].map((person, index) => (
+                              <div key={index} className="flex flex-col items-center gap-1.5">
+                                <div className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-gradient-to-br text-lg font-bold shadow-md sm:h-16 sm:w-16 ${person.color} ${person.speaking ? 'border-emerald-500' : 'border-slate-300'}`}>
+                                  {person.speaking && <span className="game-speaking-pulse pointer-events-none absolute -inset-1 rounded-full border-2 border-emerald-500" aria-hidden="true" />}
+                                  {person.initial}
+                                </div>
+                                <span className="text-[10px] font-medium text-slate-500 sm:text-xs">{person.label}{person.speaking && <span className="block text-[9px] text-slate-400">преподаватель</span>}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <a href="/images/games/v7/millionaire-classroom.png" target="_blank" rel="noopener noreferrer" aria-label="Открыть полный скриншот игры «Арабский Миллионер»" className="block w-full max-w-[540px] overflow-hidden rounded-[1.5rem] shadow-xl shadow-blue-500/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary">
+                            <Image src="/images/games/v7/millionaire-board.png" alt="Пример вопроса и вариантов ответа в игре «Арабский Миллионер»" width={720} height={720} sizes="(max-width: 768px) 72vw, 540px" className="h-auto w-full" />
+                          </a>
+                          <button type="button" onClick={showCallout} className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary">
+                            <BellRing size={16} aria-hidden="true" /> Попробовать оклик учителя
+                          </button>
+                        </div>
+                        {calledOut && <div className="game-callout absolute inset-0 z-10 flex items-center justify-center rounded-2xl" aria-live="polite">
+                          <div className="game-callout-glow pointer-events-none absolute inset-0 rounded-2xl" />
+                          <div className="relative mx-5 flex items-center gap-3 rounded-2xl border border-white/20 bg-blue-600/90 px-5 py-4 font-bold text-white shadow-2xl backdrop-blur-md"><BellRing className="animate-bounce motion-reduce:animate-none" aria-hidden="true" /> К вам обращается учитель!</div>
+                        </div>}
                       </div>
-                      <p className="text-text-muted text-sm">Скриншот игры</p>
-                    </div>
-                  </div>
+                      <figcaption className="text-xs text-text-muted mt-3 text-center leading-relaxed">Пример урока с учебными данными. Нажмите на игру, чтобы увидеть полный экран платформы.</figcaption>
+                    </figure>
+                  ) : <figure>
+                    <a href={game.image} target="_blank" rel="noopener noreferrer" aria-label={`Открыть скриншот игры «${game.title}»`} className="block aspect-[16/10] bg-surface rounded-2xl overflow-hidden border border-black/[0.06] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary">
+                      <Image src={game.image} alt={`Интерфейс игры «${game.title}» на платформе Harisa с примерным учебным заданием`} width={game.width} height={game.height} sizes="(max-width: 768px) 84vw, 896px" className="w-full h-full object-contain" />
+                    </a>
+                    <figcaption className="text-xs text-text-muted mt-3 text-center leading-relaxed">Интерфейс платформы · локальный пример с учебными данными. Нажмите, чтобы рассмотреть.</figcaption>
+                  </figure>}
                 </article>
               ))}
             </div>
@@ -141,7 +188,7 @@ export function ThreeGames() {
               <button
                 onClick={goToPrevious}
                 className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:scale-105 hover:border-blue-primary/30 active:scale-90 transition-all duration-200 touch-manipulation select-none"
-                aria-label="Previous game"
+                aria-label="Предыдущая игра"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -157,7 +204,7 @@ export function ThreeGames() {
                         ? 'bg-blue-primary w-6'
                         : 'bg-black/20 hover:bg-black/40 hover:scale-125 active:scale-125 w-2'
                     }`}
-                    aria-label={`Go to game ${i + 1}`}
+                    aria-label={`Показать игру ${i + 1}`}
                   />
                 ))}
               </div>
@@ -165,7 +212,7 @@ export function ThreeGames() {
               <button
                 onClick={goToNext}
                 className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:scale-105 hover:border-blue-primary/30 active:scale-90 transition-all duration-200 touch-manipulation select-none"
-                aria-label="Next game"
+                aria-label="Следующая игра"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -173,6 +220,15 @@ export function ThreeGames() {
           </div>
         </Reveal>
       </div>
+      <style jsx>{`
+        .game-speaking-pulse { animation: game-speaking 2s ease-in-out infinite; }
+        .game-callout { animation: game-callout-enter 250ms ease-out both; }
+        .game-callout-glow { box-shadow: inset 0 0 120px rgba(59, 130, 246, .7); animation: game-glow 1.5s ease-in-out infinite; }
+        @keyframes game-speaking { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.12); opacity: .7; } }
+        @keyframes game-glow { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
+        @keyframes game-callout-enter { from { opacity: 0; } to { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .game-speaking-pulse, .game-callout, .game-callout-glow { animation: none; } }
+      `}</style>
     </section>
   )
 }
