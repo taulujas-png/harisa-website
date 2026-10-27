@@ -1,233 +1,124 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { BellRing, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { BellRing, Hand } from 'lucide-react'
+import { useReducedMotion } from 'framer-motion'
 import Image from 'next/image'
 import { Reveal } from './reveal'
 
 const games = [
   {
-    number: "01",
-    title: "Арабский Миллионер",
-    description: "Отвечайте на вопросы по арабскому. Пока один игрок выбирает ответ, остальные тоже участвуют в раунде.",
-    image: "/images/games/millionaire.png",
-    width: 1280,
-    height: 800
+    id: 'millionaire', title: 'Арабский Миллионер', short: 'Миллионер',
+    description: 'Отвечайте на вопросы по арабскому. Пока один игрок выбирает ответ, остальные тоже участвуют в раунде.',
+    question: 'Как будет «книга»?', answer: 'كِتَاب!',
   },
   {
-    number: "02",
-    title: "Крокодил / Элиас",
-    description: "Объясняйте слово с заданным условием, а команда попробует его угадать. Практика слов в живой речи.",
-    image: "/images/games/v2/crocodile.png",
-    width: 650,
-    height: 650
+    id: 'alias', title: 'Крокодил / Элиас', short: 'Элиас',
+    description: 'Объясняйте слово на арабском, а группа попробует его угадать. Новые слова сразу идут в речь.',
+    question: 'Омар, объясни слово', answer: 'كِتَاب!',
   },
   {
-    number: "03",
-    title: "Шпион 2.0",
-    description: "Задавайте друг другу вопросы о тайной локации и попробуйте вычислить шпиона. Нужно и слушать, и говорить.",
-    image: "/images/games/v2/spy.png",
-    width: 650,
-    height: 650
-  }
+    id: 'spy', title: 'Шпион 2.0', short: 'Шпион',
+    description: 'Задавайте вопросы о тайной локации и попробуйте вычислить шпиона. Практика слушания и живого разговора.',
+    question: 'Омар, твой вопрос', answer: 'أَيْنَ نَحْنُ؟',
+  },
 ]
+
+function Participant({ name, teacher, color, className, speaking, hand, reaction, speech, arabic = false }: {
+  name: string; teacher?: boolean; color: string; className: string; speaking: boolean; hand?: boolean; reaction?: string; speech?: string; arabic?: boolean
+}) {
+  return (
+    <div className={`lesson-person ${className}`}>
+      <div className={`lesson-avatar ${speaking ? 'is-speaking' : ''}`} style={{ background: color }}>
+        <span>{name[0]}</span>
+        {speaking && <span className="lesson-speaking-ring" aria-hidden="true" />}
+        {(hand || reaction) && <span className="lesson-reaction" aria-label={hand ? 'Поднята рука' : undefined}>{hand ? <Hand size={17} className="text-amber-600" /> : reaction}</span>}
+      </div>
+      <span className="lesson-person-name">{name}</span>
+      <span className="lesson-person-role">{teacher ? 'преподаватель' : 'ученик'}</span>
+      <div className="lesson-speech-slot">{speech && <span className={`lesson-speech ${arabic ? 'lesson-speech-arabic' : ''}`} lang={arabic ? 'ar' : 'ru'} dir={arabic ? 'rtl' : undefined}>{speech}</span>}</div>
+    </div>
+  )
+}
 
 export function ThreeGames() {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [calledOut, setCalledOut] = useState(false)
-  const calloutTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const railRef = useRef<HTMLDivElement>(null)
-  const lockRef = useRef(false)
+  const [visible, setVisible] = useState(false)
+  const [step, setStep] = useState(0)
+  const scene = useRef<HTMLDivElement>(null)
+  const reducedMotion = useReducedMotion()
+  const game = games[currentIndex]
 
-  useEffect(() => () => {
-    if (calloutTimer.current) clearTimeout(calloutTimer.current)
-  }, [])
-
-  const showCallout = () => {
-    if (calloutTimer.current) clearTimeout(calloutTimer.current)
-    setCalledOut(true)
-    calloutTimer.current = setTimeout(() => setCalledOut(false), 3000)
-  }
-
-  const scrollToIndex = useCallback((i: number) => {
-    const rail = railRef.current
-    if (!rail) return
-    const clamped = (i + games.length) % games.length
-    const card = rail.children[clamped] as HTMLElement | undefined
-    if (!card) return
-    lockRef.current = true
-    rail.scrollTo({ left: card.offsetLeft - (rail.clientWidth - card.clientWidth) / 2, behavior: 'smooth' })
-    setCurrentIndex(clamped)
-    window.setTimeout(() => { lockRef.current = false }, 450)
-  }, [])
-
-  const goToPrevious = useCallback(() => {
-    scrollToIndex(currentIndex === 0 ? games.length - 1 : currentIndex - 1)
-  }, [currentIndex, scrollToIndex])
-
-  const goToNext = useCallback(() => {
-    scrollToIndex(currentIndex === games.length - 1 ? 0 : currentIndex + 1)
-  }, [currentIndex, scrollToIndex])
-
-  // Dots follow the swipe: nearest card to rail center wins
   useEffect(() => {
-    const rail = railRef.current
-    if (!rail) return
-    let raf = 0
-    const onScroll = () => {
-      if (lockRef.current) return
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const center = rail.scrollLeft + rail.clientWidth / 2
-        let best = 0
-        let bestDist = Infinity
-        Array.from(rail.children).forEach((child, i) => {
-          const el = child as HTMLElement
-          const dist = Math.abs(el.offsetLeft + el.clientWidth / 2 - center)
-          if (dist < bestDist) { bestDist = dist; best = i }
-        })
-        setCurrentIndex((prev) => (prev === best ? prev : best))
-      })
-    }
-    rail.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      rail.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(raf)
-    }
+    const element = scene.current
+    if (!element) return
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.35 })
+    observer.observe(element)
+    return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    setStep(0)
+    if (!visible || reducedMotion) return
+    // A short, silent demonstration plays only while this scene is on screen.
+    const timers = [1400, 3000, 5400, 7800].map((delay, index) => setTimeout(() => setStep(index + 1), delay))
+    return () => timers.forEach(clearTimeout)
+  }, [visible, currentIndex, reducedMotion])
 
   return (
-    <section className="bg-white py-16 md:py-24 px-4 md:px-6 overflow-hidden">
-      <div className="max-w-4xl mx-auto">
-        <Reveal>
-          <h2 className="text-2xl md:text-3xl font-semibold text-text-primary text-center mb-3">
-            Игры на живом уроке
-          </h2>
-          <p className="text-text-muted text-center text-base md:text-lg mb-10">
-            Играете вместе с группой. Преподаватель объясняет правила и ведёт занятие.
-          </p>
-        </Reveal>
-
-        {/* Carousel: native swipe rail with snap (dots follow the scroll) */}
-        <Reveal delay={0.1}>
-          <div className="relative">
-            <div
-              ref={railRef}
-              className="no-scrollbar flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0"
-              style={{ WebkitOverflowScrolling: 'touch' }}
-            >
-              {games.map((game) => (
-                <article
-                  key={game.number}
-                  className="snap-center shrink-0 w-[84%] sm:w-[70%] md:w-full"
-                >
-                  {/* Title and description block */}
-                  <div className="bg-white rounded-2xl p-5 md:p-6 mb-4 border border-black/[0.06] hover:border-blue-primary/25 hover:shadow-lg hover:shadow-blue-primary/10 hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-blue-primary flex items-center justify-center shrink-0">
-                        <span className="text-base font-semibold text-white">
-                          {game.number}
-                        </span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg md:text-xl font-semibold text-text-primary mb-1">
-                          {game.title}
-                        </h3>
-                        <p className="text-text-muted text-sm md:text-base leading-relaxed">
-                          {game.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {game.number === '01' ? (
-                    <figure>
-                      <div className="relative overflow-hidden rounded-2xl border border-black/[0.06] bg-[#f5f8fc] px-4 py-6 sm:px-8 sm:py-8">
-                        <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-4 sm:gap-5">
-                          <div className="flex items-start justify-center gap-5 sm:gap-8" aria-label="Пример участников урока">
-                            {[
-                              { initial: 'А', label: 'Ахмад', color: 'from-violet-50 to-violet-100 text-violet-700', speaking: true },
-                              { initial: 'О', label: 'Омар', color: 'from-amber-50 to-amber-100 text-amber-700', speaking: false },
-                              { initial: 'А', label: 'Али', color: 'from-sky-50 to-sky-100 text-sky-700', speaking: false },
-                            ].map((person, index) => (
-                              <div key={index} className="flex flex-col items-center gap-1.5">
-                                <div className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-gradient-to-br text-lg font-bold shadow-md sm:h-16 sm:w-16 ${person.color} ${person.speaking ? 'border-emerald-500' : 'border-slate-300'}`}>
-                                  {person.speaking && <span className="game-speaking-pulse pointer-events-none absolute -inset-1 rounded-full border-2 border-emerald-500" aria-hidden="true" />}
-                                  {person.initial}
-                                </div>
-                                <span className="text-[10px] font-medium text-slate-500 sm:text-xs">{person.label}{person.speaking && <span className="block text-[9px] text-slate-400">преподаватель</span>}</span>
-                              </div>
-                            ))}
-                          </div>
-                          <a href="/images/games/v7/millionaire-classroom.png" target="_blank" rel="noopener noreferrer" aria-label="Открыть полный скриншот игры «Арабский Миллионер»" className="block w-full max-w-[540px] overflow-hidden rounded-[1.5rem] shadow-xl shadow-blue-500/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary">
-                            <Image src="/images/games/v7/millionaire-board.png" alt="Пример вопроса и вариантов ответа в игре «Арабский Миллионер»" width={720} height={720} sizes="(max-width: 768px) 72vw, 540px" className="h-auto w-full" />
-                          </a>
-                          <button type="button" onClick={showCallout} className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-colors hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary">
-                            <BellRing size={16} aria-hidden="true" /> Попробовать оклик учителя
-                          </button>
-                        </div>
-                        {calledOut && <div className="game-callout absolute inset-0 z-10 flex items-center justify-center rounded-2xl" aria-live="polite">
-                          <div className="game-callout-glow pointer-events-none absolute inset-0 rounded-2xl" />
-                          <div className="relative mx-5 flex items-center gap-3 rounded-2xl border border-white/20 bg-blue-600/90 px-5 py-4 font-bold text-white shadow-2xl backdrop-blur-md"><BellRing className="animate-bounce motion-reduce:animate-none" aria-hidden="true" /> К вам обращается учитель!</div>
-                        </div>}
-                      </div>
-                      <figcaption className="text-xs text-text-muted mt-3 text-center leading-relaxed">Пример урока с учебными данными. Нажмите на игру, чтобы увидеть полный экран платформы.</figcaption>
-                    </figure>
-                  ) : <figure>
-                    <a href={game.image} target="_blank" rel="noopener noreferrer" aria-label={`Открыть скриншот игры «${game.title}»`} className="block aspect-[16/10] bg-surface rounded-2xl overflow-hidden border border-black/[0.06] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary">
-                      <Image src={game.image} alt={`Интерфейс игры «${game.title}» на платформе Harisa с примерным учебным заданием`} width={game.width} height={game.height} sizes="(max-width: 768px) 84vw, 896px" className="w-full h-full object-contain" />
-                    </a>
-                    <figcaption className="text-xs text-text-muted mt-3 text-center leading-relaxed">Интерфейс платформы · локальный пример с учебными данными. Нажмите, чтобы рассмотреть.</figcaption>
-                  </figure>}
-                </article>
-              ))}
-            </div>
-
-            {/* Navigation row - below the card */}
-            <div className="flex items-center justify-center gap-4 mt-6">
-              <button
-                onClick={goToPrevious}
-                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:scale-105 hover:border-blue-primary/30 active:scale-90 transition-all duration-200 touch-manipulation select-none"
-                aria-label="Предыдущая игра"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-
-              {/* Dots indicator */}
-              <div className="flex items-center gap-2">
-                {games.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => scrollToIndex(i)}
-                    className={`h-2 rounded-full transition-all duration-300 touch-manipulation ${
-                      i === currentIndex
-                        ? 'bg-blue-primary w-6'
-                        : 'bg-black/20 hover:bg-black/40 hover:scale-125 active:scale-125 w-2'
-                    }`}
-                    aria-label={`Показать игру ${i + 1}`}
-                  />
-                ))}
-              </div>
-
-              <button
-                onClick={goToNext}
-                className="w-11 h-11 rounded-full bg-white border border-black/[0.08] flex items-center justify-center text-text-primary hover:bg-blue-light hover:scale-105 hover:border-blue-primary/30 active:scale-90 transition-all duration-200 touch-manipulation select-none"
-                aria-label="Следующая игра"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
+    <section id="lesson-games" className="overflow-hidden bg-white px-4 py-16 md:px-6 md:py-24">
+      <div className="mx-auto max-w-6xl">
+        <Reveal><div className="mb-7 text-center"><h2 className="mb-3 text-2xl font-semibold text-text-primary md:text-3xl">Игры на живом уроке</h2><p className="mx-auto max-w-xl text-base text-text-muted md:text-lg">Преподаватель задаёт темп, группа включается в разговор.</p></div></Reveal>
+        <div className="mb-6 flex justify-center gap-2" role="group" aria-label="Выберите игру урока">
+          {games.map((item, index) => <button type="button" key={item.id} aria-pressed={currentIndex === index} aria-controls="lesson-scene" onClick={() => setCurrentIndex(index)} className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary sm:px-6 ${currentIndex === index ? 'border-blue-primary bg-blue-primary text-white' : 'border-slate-200 bg-white text-text-muted hover:border-blue-300 hover:text-blue-primary'}`}>{item.short}</button>)}
+        </div>
+        <div ref={scene} id="lesson-scene" className={`lesson-scene ${visible ? 'is-visible' : ''}`} data-step={step}>
+          <Participant name="Ахмад" teacher color="linear-gradient(135deg, #f5f3ff, #ddd6fe)" className="lesson-teacher" speaking={visible && (step === 0 || step === 2)} reaction={step === 4 ? '👍' : undefined} speech={step === 0 ? game.question : step === 2 ? 'Омар, твоя очередь' : step === 4 ? 'Отлично!' : undefined} />
+          <Participant name="Омар" color="linear-gradient(135deg, #fffbeb, #fde68a)" className="lesson-omar" speaking={visible && step === 3} hand={step === 1 || step === 2} reaction={step === 4 ? '😊' : undefined} speech={step === 3 ? game.answer : undefined} arabic />
+          <Participant name="Али" color="linear-gradient(135deg, #f0f9ff, #bae6fd)" className="lesson-ali" speaking={false} reaction={step === 4 ? '👏' : undefined} />
+          <div className="lesson-board-wrap">
+            <a href={`/images/games/v8/${game.id}-board.png`} target="_blank" rel="noopener noreferrer" className="lesson-board-link focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary" aria-label={`Рассмотреть доску игры «${game.title}»`}>
+              <Image key={game.id} src={`/images/games/v8/${game.id}-board.png`} alt={`Настоящий интерфейс игры «${game.title}» с учебным заданием`} width={900} height={900} sizes="(max-width: 767px) 88vw, 560px" className="h-full w-full object-contain" />
+            </a>
+            {step === 2 && <div className="lesson-callout" aria-hidden="true"><span className="lesson-callout-glow" /><span className="lesson-callout-message"><BellRing size={19} className="shrink-0" />Вас вызывает учитель</span></div>}
           </div>
-        </Reveal>
+        </div>
+        <div className="mx-auto mt-6 max-w-xl text-center"><h3 className="mb-2 text-lg font-semibold text-text-primary">{game.title}</h3><p className="min-h-16 text-sm leading-relaxed text-text-muted">{game.description}</p></div>
+        <p className="mt-2 text-center text-xs text-text-muted">Пример урока с учебными данными и участниками.</p>
       </div>
-      <style jsx>{`
-        .game-speaking-pulse { animation: game-speaking 2s ease-in-out infinite; }
-        .game-callout { animation: game-callout-enter 250ms ease-out both; }
-        .game-callout-glow { box-shadow: inset 0 0 120px rgba(59, 130, 246, .7); animation: game-glow 1.5s ease-in-out infinite; }
-        @keyframes game-speaking { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.12); opacity: .7; } }
-        @keyframes game-glow { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
-        @keyframes game-callout-enter { from { opacity: 0; } to { opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) { .game-speaking-pulse, .game-callout, .game-callout-glow { animation: none; } }
+      <style jsx global>{`
+        #lesson-games .lesson-scene { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: "teacher omar ali" "board board board"; gap: 5px 8px; max-width: 960px; margin: auto; padding: 22px 12px 14px; border-radius: 28px; background: #f6f8fc; border: 1px solid #eef1f6; }
+        #lesson-games .lesson-person { display: flex; flex-direction: column; align-items: center; min-width: 0; position: relative; align-self: center; }
+        #lesson-games .lesson-teacher { grid-area: teacher; }
+        #lesson-games .lesson-omar { grid-area: omar; }
+        #lesson-games .lesson-ali { grid-area: ali; }
+        #lesson-games .lesson-avatar { position: relative; display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 5px 12px #0f172a12; color: #334155; font-size: 21px; font-weight: 700; transition: border-color .3s; }
+        #lesson-games .is-speaking { border-color: #10b981; }
+        #lesson-games .lesson-speaking-ring { position: absolute; inset: -5px; border: 2px solid #10b981; border-radius: 50%; animation: lesson-speaking 2s ease-in-out infinite; }
+        #lesson-games .lesson-reaction { position: absolute; bottom: -4px; right: -7px; width: 27px; height: 27px; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; border-radius: 50%; background: white; font-size: 16px; box-shadow: 0 3px 8px #0f172a0a; animation: lesson-pop .3s ease-out; }
+        #lesson-games .lesson-person-name { margin-top: 8px; color: #334155; font-size: 12px; font-weight: 600; }
+        #lesson-games .lesson-person-role { color: #94a3b8; font-size: 9px; }
+        #lesson-games .lesson-speech-slot { height: 46px; display: flex; align-items: center; justify-content: center; width: 100%; }
+        #lesson-games .lesson-speech { position: relative; z-index: 2; padding: 5px 7px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #475569; text-align: center; font-size: 10px; line-height: 1.4; box-shadow: 0 3px 8px #0f172a05; animation: lesson-pop .3s ease-out; }
+        #lesson-games .lesson-speech-arabic { color: #1d4ed8; font-size: 19px; }
+        #lesson-games .lesson-board-wrap { grid-area: board; position: relative; min-width: 0; width: 100%; aspect-ratio: 1; align-self: center; border-radius: 22px; box-shadow: 0 16px 35px #2563eb12; }
+        #lesson-games .lesson-board-link { display: block; width: 100%; height: 100%; overflow: hidden; border-radius: inherit; background: white; }
+        #lesson-games .lesson-callout { position: absolute; inset: 0; pointer-events: none; border-radius: inherit; display: flex; align-items: flex-start; justify-content: center; padding: 16px 8px; }
+        #lesson-games .lesson-callout-glow { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 90px #3b82f670; animation: lesson-glow 1.5s ease-in-out infinite; }
+        #lesson-games .lesson-callout-message { position: relative; display: flex; align-items: center; gap: 8px; background: #2563ebed; color: white; border: 1px solid #ffffff40; border-radius: 14px; padding: 10px 14px; font-size: 12px; font-weight: 600; box-shadow: 0 8px 20px #2563eb30; animation: lesson-pop .3s ease-out; }
+        @media (min-width: 768px) {
+          #lesson-games .lesson-scene { grid-template-columns: 110px minmax(0, 560px) 110px; grid-template-rows: 1fr 1fr; grid-template-areas: "teacher board omar" "teacher board ali"; justify-content: center; gap: 12px 24px; padding: 32px 24px; }
+          #lesson-games .lesson-avatar { width: 72px; height: 72px; font-size: 27px; }
+          #lesson-games .lesson-person-name { font-size: 13px; }
+          #lesson-games .lesson-person-role { font-size: 10px; }
+          #lesson-games .lesson-speech { font-size: 11px; }
+          #lesson-games .lesson-speech-arabic { font-size: 22px; }
+          #lesson-games .lesson-callout-message { font-size: 14px; padding: 12px 18px; }
+        }
+        @keyframes lesson-speaking { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.12); opacity: .7; } }
+        @keyframes lesson-glow { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
+        @keyframes lesson-pop { from { opacity: 0; transform: translateY(5px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @media (prefers-reduced-motion: reduce) { #lesson-games .lesson-speaking-ring, #lesson-games .lesson-reaction, #lesson-games .lesson-speech, #lesson-games .lesson-callout-glow, #lesson-games .lesson-callout-message { animation: none; } }
       `}</style>
     </section>
   )
