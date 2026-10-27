@@ -15,7 +15,7 @@ const letters = ['ا', 'ب', 'ك', 'ت']
 const focus = 'focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-primary'
 
 function Phone({ number, title, subtitle, children }: { number: string; title: string; subtitle: string; children: ReactNode }) {
-  const { ref, isVisible } = useScrollReveal(.15)
+  const { ref, isVisible } = useScrollReveal(.18)
   return (
     <article ref={ref} data-visible={isVisible} style={{ transitionDelay: `${(Number(number) - 1) * 90}ms` }} className="homework-phone snap-center shrink-0 w-[min(84vw,320px)] lg:w-full lg:max-w-[320px] lg:justify-self-center">
       <div className="relative flex h-[550px] flex-col overflow-hidden rounded-[2.5rem] border-[5px] border-white bg-white shadow-xl shadow-slate-900/[0.07] ring-1 ring-slate-200">
@@ -150,7 +150,7 @@ export function HomeworkDemo() {
         <div className="mt-6 text-center"><a href="#schedule" className="inline-flex items-center gap-2 text-sm font-medium text-blue-primary hover:underline underline-offset-4">Посмотреть наборы<ArrowRight size={16} /></a></div>
       </div>
       <style jsx global>{`
-        #demo .homework-phone { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s cubic-bezier(.2,.75,.2,1); }
+        #demo .homework-phone { opacity:0; transform:translateY(32px) scale(.975); transition:opacity .75s ease,transform .85s cubic-bezier(.16,1,.3,1); }
         #demo .homework-phone[data-visible=true] { opacity:1; transform:none; }
         #demo .homework-tile { transition:background .25s,border-color .25s,color .25s,transform .2s,box-shadow .2s; }
         #demo .homework-tile:not(:disabled):hover { transform:translateY(-2px); box-shadow:0 4px 10px #2563eb0a; }
