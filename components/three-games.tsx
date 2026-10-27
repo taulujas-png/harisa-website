@@ -140,7 +140,7 @@ export function ThreeGames() {
       #lesson-games .story-nav-track { display:block; height:2px; width:100%; background:#e2e8f0; margin-bottom:9px; overflow:hidden; }
       #lesson-games .story-nav-track>span { display:block; height:100%; width:100%; transform-origin:left; background:#2563eb; }
       #lesson-games .story-board { width:100%; max-width:min(470px,63svh); aspect-ratio:1; position:relative; justify-self:center; transform:translate(var(--board-x,0px),var(--board-y,40px)) scale(var(--board-scale,.95)) rotate(var(--board-rotate,0deg)); }
-      #lesson-games .story-board img { display:block; width:100%; height:100%; object-fit:contain; border-radius:24px; pointer-events:none; user-select:none; }
+      #lesson-games .story-board img { display:block; width:100%; height:100%; object-fit:contain; border-radius:24px; box-shadow:0 4px 12px rgb(15 23 42 / .025),0 24px 48px -16px rgb(37 99 235 / .14),0 48px 80px -32px rgb(15 23 42 / .16); pointer-events:none; user-select:none; }
       #lesson-games .story-people { display:flex; flex-direction:column; gap:32px; align-items:center; transform:translateY(var(--people-y,22px)); }
       #lesson-games .story-person { display:flex; flex-direction:column; align-items:center; position:relative; }
       #lesson-games .story-avatar { position:relative; width:58px; height:58px; display:flex; justify-content:center; align-items:center; border-radius:50%; border:2px solid white; box-shadow:0 5px 16px #0f172a10; font-size:23px; font-weight:500; color:#334155; }
